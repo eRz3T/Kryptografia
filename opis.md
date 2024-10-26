@@ -96,3 +96,72 @@ Podział tekstu na kolumny:
     j  n  y
 
 Zaszyfrowany tekst: "strpjzonayynfscr"
+
+
+
+
+
+
+# 3. Algorytm DES (Data Encryption Standard)
+
+DES to symetryczny algorytm szyfrowania blokowego, zaprojektowany do szyfrowania danych w blokach o długości 64 bitów, przy użyciu 56-bitowego klucza.
+
+Jak działa DES:
+
+#### Krok 1: Podział danych na bloki
+Dane są dzielone na bloki o długości 64 bitów, a każdy blok jest przetwarzany osobno.
+
+#### Krok 2: Generowanie kluczy rundowych
+Z 56-bitowego klucza głównego generowane jest 16 kluczy rundowych.
+
+#### Krok 3: 16 rund szyfrowania
+Każdy blok danych przechodzi przez 16 rund szyfrowania, które obejmują permutacje, zamiany bitów i operacje logiczne z wykorzystaniem kluczy rundowych.
+
+#### Krok 4: Łączenie wyników
+Po 16 rundach zaszyfrowany blok jest łączony z kolejnymi blokami, aby uzyskać zaszyfrowany tekst.
+
+**Przykład**:  
+Tekst: `123456ABCD132536` (64-bitowy blok)  
+Klucz: `A1B2C3D4E5F60708` (56-bitowy)  
+Szyfrogram: (po 16 rundach) `C0B7A8D05F3A829C`
+
+**Zalety**: Powszechnie stosowany w kryptografii do szyfrowania danych.
+
+**Wady**: Ze względu na krótki klucz, DES jest podatny na ataki brute-force, dlatego obecnie zaleca się stosowanie bardziej zaawansowanych algorytmów jak AES.
+
+
+
+
+
+
+
+# 4. Algorytm AES (Advanced Encryption Standard)
+
+AES to zaawansowany algorytm szyfrowania blokowego, który został przyjęty jako standard przez NIST. AES działa na blokach danych o długości 128 bitów i obsługuje klucze o długościach 128, 192 lub 256 bitów.
+
+Jak działa AES:
+
+#### Krok 1: Podział danych na bloki
+Dane są dzielone na bloki o długości 128 bitów.
+
+#### Krok 2: Generowanie kluczy rundowych
+AES wykorzystuje klucz główny, z którego generowane są klucze rundowe dla poszczególnych rund (10, 12 lub 14 rund, w zależności od długości klucza).
+
+#### Krok 3: Operacje szyfrowania
+Każda runda szyfrowania składa się z czterech podstawowych operacji:
+- **SubBytes**: Zamiana bajtów na podstawie tabeli substytucji.
+- **ShiftRows**: Przesunięcie wierszy macierzy.
+- **MixColumns**: Mieszanie kolumn macierzy.
+- **AddRoundKey**: Dodanie klucza rundowego.
+
+#### Krok 4: Finalizacja
+Po ostatniej rundzie otrzymujemy zaszyfrowany blok, który jest łączony z kolejnymi blokami, aby uzyskać zaszyfrowany tekst.
+
+**Przykład**:  
+Tekst: `00112233445566778899AABBCCDDEEFF` (128-bitowy blok)  
+Klucz: `000102030405060708090A0B0C0D0E0F` (128-bitowy)  
+Szyfrogram: `69C4E0D86A7B0430D8CDB78070B4C55A` (po 10 rundach)
+
+**Zalety**: Bardzo bezpieczny algorytm o dużej szybkości działania, wykorzystywany w wielu aplikacjach kryptograficznych.
+
+**Wady**: Wymaga zaawansowanych zasobów obliczeniowych w porównaniu z DES.
