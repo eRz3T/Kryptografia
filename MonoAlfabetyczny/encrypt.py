@@ -1,5 +1,3 @@
-# encrypt.py
-
 def create_cipher_dict(key):
     """Funkcja tworzy słownik szyfru monoalfabetycznego na podstawie klucza."""
     alphabet = "abcdefghijklmnopqrstuvwxyz"
@@ -15,14 +13,14 @@ def encrypt_text_file(input_file, output_file, key):
     cipher_dict = create_cipher_dict(key)
     
     with open(input_file, 'r') as file:
-        content = file.read().lower()  # Odczyt zawartości i zamiana na małe litery
+        content = file.read().lower()  
     
-    encrypted_content = ''.join([cipher_dict.get(char, char) for char in content])  # Szyfrowanie
+    encrypted_content = ''.join([cipher_dict.get(char, char) for char in content])  
     
     with open(output_file, 'w') as file:
-        file.write(encrypted_content)  # Zapis zaszyfrowanej treści
+        file.write(encrypted_content)  
 
-# Przykład wywołania
+
 if __name__ == "__main__":
-    key = "qwertyuiopasdfghjklzxcvbnm"  # Twój klucz szyfrujący
+    key = "qwertyuiopasdfghjklzxcvbnm" 
     encrypt_text_file('plain_text.txt', 'encrypted_text.txt', key)

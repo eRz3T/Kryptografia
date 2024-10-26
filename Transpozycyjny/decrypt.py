@@ -1,5 +1,3 @@
-# decrypt.py
-
 def decrypt_message(message, key):
     """Odszyfrowuje wiadomość zaszyfrowaną szyfrem transpozycyjnym."""
     num_of_columns = int(len(message) / key)
@@ -18,7 +16,7 @@ def decrypt_message(message, key):
             column = 0
             row += 1
 
-    return ''.join(plaintext).rstrip()  # Usuń nadmiarowe spacje, które mogły zostać dodane
+    return ''.join(plaintext).rstrip() 
 
 def decrypt_text_file(input_file, output_file, key):
     """Odszyfrowuje zawartość pliku tekstowego zaszyfrowanego szyfrem transpozycyjnym."""
@@ -30,7 +28,7 @@ def decrypt_text_file(input_file, output_file, key):
     with open(output_file, 'w') as file:
         file.write(decrypted_content)
 
-# Przykład wywołania (możesz to usunąć, jeśli nie potrzebujesz)
+
 if __name__ == "__main__":
     key = 3  # Klucz określający ilość kolumn
     decrypt_text_file('encrypted_text.txt', 'decrypted_text.txt', key)

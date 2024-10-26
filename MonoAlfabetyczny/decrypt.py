@@ -1,5 +1,3 @@
-# decrypt.py
-
 def create_reverse_cipher_dict(key):
     """Funkcja tworzy słownik odszyfrowujący na podstawie klucza."""
     alphabet = "abcdefghijklmnopqrstuvwxyz"
@@ -15,14 +13,14 @@ def decrypt_text_file(input_file, output_file, key):
     reverse_cipher_dict = create_reverse_cipher_dict(key)
     
     with open(input_file, 'r') as file:
-        content = file.read().lower()  # Odczyt zawartości i zamiana na małe litery
+        content = file.read().lower()  
     
-    decrypted_content = ''.join([reverse_cipher_dict.get(char, char) for char in content])  # Odszyfrowanie
+    decrypted_content = ''.join([reverse_cipher_dict.get(char, char) for char in content])  
     
     with open(output_file, 'w') as file:
-        file.write(decrypted_content)  # Zapis odszyfrowanej treści
+        file.write(decrypted_content)  
 
-# Przykład wywołania
+
 if __name__ == "__main__":
-    key = "qwertyuiopasdfghjklzxcvbnm"  # Twój klucz szyfrujący
+    key = "qwertyuiopasdfghjklzxcvbnm"  
     decrypt_text_file('encrypted_text.txt', 'decrypted_text.txt', key)

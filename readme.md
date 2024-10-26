@@ -9,6 +9,10 @@ sudo apt install python3 python3-pip python3-venv python3-tk
 ```
 python3 -m venv <NAZWA_FOLDERU>
 ```
+### 2.1 Instalacja niezbędnych paczek puthon
+```
+pip install pycryptodome
+```
 ## 3. Uruchomienie środowiska wirtualnego
 ```
 source <NAZWA_FOLDERU>/bin/activate
@@ -20,4 +24,3 @@ cd <NAZWA_FOLDERU>/
 ```
 python gui.py
 ```
-
