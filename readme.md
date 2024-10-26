@@ -9,7 +9,7 @@ sudo apt install python3 python3-pip python3-venv python3-tk
 ```
 python3 -m venv <NAZWA_FOLDERU>
 ```
-### 2.1 Instalacja niezbędnych paczek puthon
+### 2.1 Instalacja niezbędnych paczek python
 ```
 pip install pycryptodome
 ```
