@@ -30,5 +30,5 @@ def decrypt_text_file(input_file, output_file, key):
 
 
 if __name__ == "__main__":
-    key = 3  # Klucz określający ilość kolumn
+    key = 3  
     decrypt_text_file('encrypted_text.txt', 'decrypted_text.txt', key)
