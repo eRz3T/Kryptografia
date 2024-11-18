@@ -24,3 +24,7 @@ cd <NAZWA_FOLDERU>/
 ```
 python gui.py
 ```
+## Testowanie
+```
+python -m unittest -v Testy."NAZWATESTU"
+```

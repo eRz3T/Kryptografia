@@ -16,10 +16,10 @@ def run_des_stream_gui():
     Popen(["python", os.path.join("DES_strumieniowy", "gui.py")])
 
 def run_rsa_gui():
-    Popen(["python", os.path.join("Diffie-Hellman", "RSA", "gui.py")])
+    Popen(["python", os.path.join("Diffie_Hellman", "RSA", "gui.py")])
 
 def run_diffie_hellman_gui():
-    Popen(["python", os.path.join("Diffie-Hellman", "simulation.py")])
+    Popen(["python", os.path.join("Diffie_Hellman", "simulation.py")])
 
 def run_monoalphabetic_gui():
     Popen(["python", os.path.join("MonoAlfabetyczny", "gui.py")])

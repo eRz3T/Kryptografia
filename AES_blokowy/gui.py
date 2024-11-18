@@ -1,8 +1,9 @@
 import tkinter as tk
 from tkinter import filedialog, messagebox
-from encrypt import encrypt_file
-from decrypt import decrypt_file
+from AES_blokowy.encrypt import encrypt_file
+from AES_blokowy.decrypt import decrypt_file
 import os
+
 
 def get_key():
     key = key_entry.get().encode()
@@ -11,29 +12,48 @@ def get_key():
         return None
     return key
 
-def encrypt_file_action():
-    file_path = filedialog.askopenfilename(title="Wybierz plik do zaszyfrowania")
-    if not file_path:
-        return
-    output_path = filedialog.asksaveasfilename(title="Zapisz zaszyfrowany plik jako")
-    if not output_path:
-        return
-    key = get_key()
-    if key:
-        encrypt_file(file_path, output_path, key)
+
+def encrypt_file_action(input_path=None, output_path=None, key=None):
+    """
+    Funkcja do szyfrowania pliku. Może być wywołana z GUI lub testów.
+    """
+    if not input_path or not output_path or not key:
+        # Wywołanie z GUI
+        input_path = filedialog.askopenfilename(title="Wybierz plik do zaszyfrowania")
+        if not input_path:
+            return
+        output_path = filedialog.asksaveasfilename(title="Zapisz zaszyfrowany plik jako")
+        if not output_path:
+            return
+        key = get_key()
+        if not key:
+            return
+
+    encrypt_file(input_path, output_path, key)
+    if not input_path or not output_path:
         messagebox.showinfo("Sukces", "Plik został zaszyfrowany i zapisany.")
 
-def decrypt_file_action():
-    file_path = filedialog.askopenfilename(title="Wybierz plik do odszyfrowania")
-    if not file_path:
-        return
-    output_path = filedialog.asksaveasfilename(title="Zapisz odszyfrowany plik jako")
-    if not output_path:
-        return
-    key = get_key()
-    if key:
-        decrypt_file(file_path, output_path, key)
+
+def decrypt_file_action(input_path=None, output_path=None, key=None):
+    """
+    Funkcja do deszyfrowania pliku. Może być wywołana z GUI lub testów.
+    """
+    if not input_path or not output_path or not key:
+        # Wywołanie z GUI
+        input_path = filedialog.askopenfilename(title="Wybierz plik do odszyfrowania")
+        if not input_path:
+            return
+        output_path = filedialog.asksaveasfilename(title="Zapisz odszyfrowany plik jako")
+        if not output_path:
+            return
+        key = get_key()
+        if not key:
+            return
+
+    decrypt_file(input_path, output_path, key)
+    if not input_path or not output_path:
         messagebox.showinfo("Sukces", "Plik został odszyfrowany i zapisany.")
+
 
 def encrypt_text_action():
     text = text_entry.get("1.0", tk.END).encode()
@@ -51,6 +71,8 @@ def encrypt_text_action():
         os.remove("temp_text.txt")
         messagebox.showinfo("Sukces", "Tekst został zaszyfrowany i zapisany w pliku.")
 
+
+# GUI
 app = tk.Tk()
 app.title("AES Encrypt/Decrypt")
 

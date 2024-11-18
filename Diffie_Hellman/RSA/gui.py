@@ -6,7 +6,15 @@ from decrypt import decrypt_file_hybrid, decrypt_file_rsa
 def generate_keys():
     global private_key, public_key
     private_key, public_key = generate_rsa_keys()
-    messagebox.showinfo("Sukces", "Klucze RSA wygenerowane!")
+
+    # Zapis kluczy do plików (opcjonalne)
+    with open("private_key.pem", "wb") as priv_file:
+        priv_file.write(private_key)
+    with open("public_key.pem", "wb") as pub_file:
+        pub_file.write(public_key)
+
+    messagebox.showinfo("Sukces", "Klucze RSA zostały wygenerowane i zapisane!")
+
 
 def encrypt_text_to_file():
     if not public_key:
@@ -17,14 +25,13 @@ def encrypt_text_to_file():
         messagebox.showerror("Błąd", "Pole tekstowe jest puste!")
         return
     encrypted_text = encrypt_text_rsa(text, public_key)
-
-    output_path = filedialog.asksaveasfilename(title="Zapisz zaszyfrowany tekst jako", defaultextension=".txt", filetypes=[("Text files", "*.txt"), ("All files", "*.*")])
+    output_path = filedialog.asksaveasfilename(
+        title="Zapisz zaszyfrowany tekst jako", defaultextension=".txt", filetypes=[("Text files", "*.txt"), ("All files", "*.*")]
+    )
     if not output_path:
         return
-    
     with open(output_path, 'wb') as f:
         f.write(encrypted_text)
-
     messagebox.showinfo("Sukces", "Tekst został zaszyfrowany i zapisany do pliku.")
 
 def encrypt_file_action():
@@ -37,8 +44,13 @@ def encrypt_file_action():
     output_path = filedialog.asksaveasfilename(title="Zapisz zaszyfrowany plik jako")
     if not output_path:
         return
-    encrypt_file_hybrid(file_path, output_path, public_key)
-    messagebox.showinfo("Sukces", "Plik został zaszyfrowany i zapisany.")
+
+    try:
+        encrypt_file_hybrid(file_path, output_path, public_key)
+        messagebox.showinfo("Sukces", "Plik został zaszyfrowany i zapisany.")
+    except Exception as e:
+        messagebox.showerror("Błąd", f"Nie udało się zaszyfrować pliku: {e}")
+
 
 def decrypt_file_action():
     if not private_key:
@@ -52,13 +64,15 @@ def decrypt_file_action():
         return
 
     method = messagebox.askyesno("Wybór metody odszyfrowania", "Czy plik został zaszyfrowany hybrydowo (RSA + AES)?")
-    
-    if method:
-        decrypt_file_hybrid(file_path, output_path, private_key)
-    else:
-        decrypt_file_rsa(file_path, output_path, private_key)
+    try:
+        if method:
+            decrypt_file_hybrid(file_path, output_path, private_key)
+        else:
+            decrypt_file_rsa(file_path, output_path, private_key)
+        messagebox.showinfo("Sukces", "Plik został odszyfrowany i zapisany.")
+    except Exception as e:
+        messagebox.showerror("Błąd", f"Nie udało się odszyfrować pliku: {e}")
 
-    messagebox.showinfo("Sukces", "Plik został odszyfrowany i zapisany.")
 
 private_key = None
 public_key = None

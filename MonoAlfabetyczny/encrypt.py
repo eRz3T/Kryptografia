@@ -1,5 +1,7 @@
 def create_cipher_dict(key):
-    """Funkcja tworzy słownik szyfru monoalfabetycznego na podstawie klucza."""
+    if len(key) != 26:
+        raise ValueError("Klucz szyfru monoalfabetycznego musi mieć dokładnie 26 znaków.")
+
     alphabet = "abcdefghijklmnopqrstuvwxyz"
     cipher = {}
     
@@ -9,18 +11,20 @@ def create_cipher_dict(key):
     return cipher
 
 def encrypt_text_file(input_file, output_file, key):
-    """Szyfruje zawartość pliku tekstowego za pomocą szyfru monoalfabetycznego."""
-    cipher_dict = create_cipher_dict(key)
+    cipher_dict = create_cipher_dict(key)  # Rzuci ValueError, jeśli klucz jest nieprawidłowy
     
     with open(input_file, 'r') as file:
-        content = file.read().lower()  
+        content = file.read().lower()  # Konwersja na małe litery
     
-    encrypted_content = ''.join([cipher_dict.get(char, char) for char in content])  
+    encrypted_content = ''.join([cipher_dict.get(char, char) for char in content])  # Zamiana znaków
     
     with open(output_file, 'w') as file:
-        file.write(encrypted_content)  
+        file.write(encrypted_content)
 
 
 if __name__ == "__main__":
-    key = "qwertyuiopasdfghjklzxcvbnm" 
-    encrypt_text_file('plain_text.txt', 'encrypted_text.txt', key)
+    key = "qwertyuiopasdfghjklzxcvbnm"  # Przykładowy klucz
+    try:
+        encrypt_text_file('plain_text.txt', 'encrypted_text.txt', key)
+    except ValueError as ve:
+        print(f"Błąd: {ve}")
