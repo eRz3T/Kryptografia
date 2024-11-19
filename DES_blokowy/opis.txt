@@ -1,0 +1,88 @@
+1. Algorytm DES (Data Encryption Standard)
+Czym jest DES?
+DES (Data Encryption Standard) to algorytm szyfrowania symetrycznego opracowany w latach 70. przez IBM i zatwierdzony przez amerykański NIST jako standard szyfrowania danych. Obecnie jest uznawany za przestarzały ze względu na krótki klucz szyfrowania (56 bitów), ale wciąż znajduje zastosowanie w edukacji i starszych systemach.
+
+Kluczowe cechy DES:
+Szyfrowanie blokowe:
+
+DES działa na blokach danych o stałej długości 64 bitów (8 bajtów).
+Jeśli dane nie są wielokrotnością 64 bitów, należy je odpowiednio wyrównać (padding).
+Długość klucza:
+
+Klucz DES ma długość 64 bitów, ale tylko 56 bitów jest używanych do szyfrowania. Pozostałe 8 bitów to bity kontrolne (parzystość).
+Tryby pracy:
+
+W tym programie DES działa w trybie ECB (Electronic Codebook), który szyfruje każdy blok niezależnie. Wady tego trybu:
+Powtarzające się bloki danych wejściowych generują takie same bloki wyjściowe, co czyni go podatnym na analizę wzorców.
+Padding:
+
+Bloki danych, które nie są wielokrotnością 64 bitów, są wyrównywane za pomocą paddingu (np. PKCS7), aby osiągnąć wymaganą długość.
+Symetryczność:
+
+Ten sam klucz jest używany zarówno do szyfrowania, jak i deszyfrowania.
+2. Funkcjonowanie programu
+Moduły programu:
+Program składa się z trzech głównych komponentów:
+
+encrypt.py – Służy do szyfrowania plików.
+decrypt.py – Służy do deszyfrowania plików.
+gui.py – Graficzny interfejs użytkownika (GUI) umożliwiający wybór plików do szyfrowania/deszyfrowania oraz wprowadzenie klucza.
+Proces szyfrowania w programie:
+Wejście:
+Użytkownik wskazuje plik do zaszyfrowania.
+Podaje klucz DES (dokładnie 8 znaków = 64 bity).
+Operacje:
+Program odczytuje dane z pliku wejściowego w trybie binarnym.
+Dane są wyrównywane (padding) do wielokrotności 8 bajtów.
+Każdy blok danych (8 bajtów) jest szyfrowany za pomocą DES w trybie ECB.
+Wyjście:
+Zaszyfrowane dane są zapisywane do pliku wyjściowego.
+Proces deszyfrowania w programie:
+Wejście:
+Użytkownik wskazuje plik zaszyfrowany oraz podaje klucz DES (musi być ten sam, co podczas szyfrowania).
+Operacje:
+Program odczytuje dane z pliku zaszyfrowanego.
+Dane są odszyfrowywane blok po bloku przy użyciu DES w trybie ECB.
+Padding dodany podczas szyfrowania jest usuwany (unpadding).
+Wyjście:
+Odszyfrowane dane są zapisywane do pliku wyjściowego.
+Funkcje w gui.py:
+Program udostępnia prosty graficzny interfejs użytkownika (GUI), który pozwala na łatwe korzystanie z funkcji szyfrowania i deszyfrowania.
+
+Szyfrowanie pliku:
+
+Użytkownik wybiera plik do zaszyfrowania i podaje klucz DES (8 znaków).
+Program szyfruje plik i zapisuje wynik w wybranej lokalizacji.
+Deszyfrowanie pliku:
+
+Użytkownik wybiera plik zaszyfrowany i podaje klucz DES.
+Program deszyfruje plik i zapisuje wynik w wybranej lokalizacji.
+Szyfrowanie tekstu:
+
+Użytkownik wpisuje tekst w polu tekstowym.
+Program zapisuje tekst do pliku tymczasowego, szyfruje go i zapisuje wynik w wybranej lokalizacji.
+3. Jak działa program?
+Szyfrowanie pliku (funkcja encrypt_file):
+Program otwiera plik wejściowy i odczytuje jego zawartość jako ciąg bajtów.
+Wyrównuje dane do wielokrotności 64 bitów (8 bajtów) za pomocą paddingu.
+Tworzy instancję DES w trybie ECB z podanym kluczem.
+Szyfruje dane blok po bloku.
+Zapisuje wynik do pliku wyjściowego.
+Deszyfrowanie pliku (funkcja decrypt_file):
+Program otwiera plik zaszyfrowany i odczytuje jego zawartość jako ciąg bajtów.
+Tworzy instancję DES w trybie ECB z podanym kluczem.
+Deszyfruje dane blok po bloku.
+Usuwa padding z odszyfrowanych danych.
+Zapisuje wynik do pliku wyjściowego.
+Interakcja z GUI:
+Użytkownik korzysta z przycisków w GUI do wyboru plików i wprowadzenia klucza.
+Program wyświetla komunikaty o błędach (np. nieprawidłowy klucz) oraz sukcesie operacji.
+4. Zalety i ograniczenia programu
+Zalety:
+Prosta obsługa: Graficzny interfejs użytkownika sprawia, że program jest intuicyjny i łatwy w użyciu.
+Modularność: Program jest podzielony na oddzielne moduły do szyfrowania, deszyfrowania i GUI, co ułatwia konserwację.
+Szyfrowanie blokowe: Algorytm DES zapewnia podstawową ochronę danych.
+Ograniczenia:
+Przestarzały algorytm: DES jest uznawany za niebezpieczny w zastosowaniach produkcyjnych ze względu na krótki klucz (56 bitów podatnych na ataki siłowe).
+Tryb ECB: Powtarzające się wzorce w danych są widoczne w zaszyfrowanym pliku, co czyni tryb ECB podatnym na analizę wzorców.
+Ręczne zarządzanie kluczem: Klucz DES musi być dokładnie taki sam podczas szyfrowania i deszyfrowania, co może być trudne do zarządzania w praktyce.

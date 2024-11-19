@@ -4,33 +4,45 @@ import encrypt
 import decrypt
 
 def browse_file(entry):
+    """
+    Otwiera okno dialogowe do wyboru pliku i zapisuje jego ścieżkę w polu tekstowym.
+    """
     filename = filedialog.askopenfilename(title="Wybierz plik tekstowy", filetypes=[("Pliki tekstowe", "*.txt")])
     entry.delete(0, tk.END)
     entry.insert(0, filename)
 
 def encrypt_file():
+    """
+    Szyfruje plik wybrany przez użytkownika za pomocą klucza.
+    """
     input_file = input_file_entry.get()
     output_file = output_file_entry.get()
     key = key_entry.get()
     
     if input_file and output_file and key:
-        encrypt.encrypt_text_file(input_file, output_file, key)
+        encrypt.encrypt_text_file(input_file, output_file, key)  # Wywołanie funkcji szyfrowania.
         messagebox.showinfo("Sukces", "Plik został zaszyfrowany!")
     else:
         messagebox.showerror("Błąd", "Uzupełnij wszystkie pola!")
 
 def decrypt_file():
+    """
+    Odszyfrowuje plik wybrany przez użytkownika za pomocą klucza.
+    """
     input_file = input_file_entry.get()
     output_file = output_file_entry.get()
     key = key_entry.get()
     
     if input_file and output_file and key:
-        decrypt.decrypt_text_file(input_file, output_file, key)
+        decrypt.decrypt_text_file(input_file, output_file, key)  # Wywołanie funkcji odszyfrowania.
         messagebox.showinfo("Sukces", "Plik został odszyfrowany!")
     else:
         messagebox.showerror("Błąd", "Uzupełnij wszystkie pola!")
 
 def encrypt_text_action():
+    """
+    Szyfruje tekst wpisany przez użytkownika w GUI i zapisuje go do pliku.
+    """
     text = text_entry.get("1.0", tk.END).strip().lower()
     key = key_entry.get()
     
@@ -44,12 +56,15 @@ def encrypt_text_action():
     
     output_file = filedialog.asksaveasfilename(title="Zapisz zaszyfrowany tekst jako", defaultextension=".txt")
     if output_file:
-        encrypted_text = ''.join([encrypt.create_cipher_dict(key).get(char, char) for char in text])
+        encrypted_text = ''.join([encrypt.create_cipher_dict(key).get(char, char) for char in text])  # Szyfrowanie liter.
         with open(output_file, 'w') as file:
             file.write(encrypted_text)
         messagebox.showinfo("Sukces", "Tekst został zaszyfrowany i zapisany w pliku!")
 
 def decrypt_text_action():
+    """
+    Odszyfrowuje tekst wpisany przez użytkownika w GUI i zapisuje go do pliku.
+    """
     text = text_entry.get("1.0", tk.END).strip().lower()
     key = key_entry.get()
     
@@ -63,14 +78,16 @@ def decrypt_text_action():
     
     output_file = filedialog.asksaveasfilename(title="Zapisz odszyfrowany tekst jako", defaultextension=".txt")
     if output_file:
-        decrypted_text = ''.join([decrypt.create_reverse_cipher_dict(key).get(char, char) for char in text])
+        decrypted_text = ''.join([decrypt.create_reverse_cipher_dict(key).get(char, char) for char in text])  # Odszyfrowanie liter.
         with open(output_file, 'w') as file:
             file.write(decrypted_text)
         messagebox.showinfo("Sukces", "Tekst został odszyfrowany i zapisany w pliku!")
 
+# Tworzenie GUI
 window = tk.Tk()
 window.title("Szyfrowanie i deszyfrowanie plików")
 
+# Dodanie elementów GUI
 tk.Label(window, text="Plik wejściowy:").grid(row=0, column=0, padx=10, pady=10)
 input_file_entry = tk.Entry(window, width=40)
 input_file_entry.grid(row=0, column=1, padx=10, pady=10)
@@ -89,9 +106,11 @@ tk.Label(window, text="Tekst do szyfrowania/odszyfrowania:").grid(row=3, column=
 text_entry = tk.Text(window, height=10, width=50)
 text_entry.grid(row=4, column=0, columnspan=3, padx=10, pady=10)
 
+# Przyciski akcji
 tk.Button(window, text="Szyfruj plik", command=encrypt_file).grid(row=5, column=0, padx=10, pady=10)
 tk.Button(window, text="Deszyfruj plik", command=decrypt_file).grid(row=5, column=1, padx=10, pady=10)
 tk.Button(window, text="Szyfruj tekst do pliku", command=encrypt_text_action).grid(row=6, column=0, padx=10, pady=10)
 tk.Button(window, text="Deszyfruj tekst do pliku", command=decrypt_text_action).grid(row=6, column=1, padx=10, pady=10)
 
+# Uruchomienie interfejsu graficznego
 window.mainloop()

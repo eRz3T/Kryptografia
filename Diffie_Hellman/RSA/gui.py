@@ -3,11 +3,12 @@ from tkinter import filedialog, messagebox
 from encrypt import generate_rsa_keys, encrypt_text_rsa, encrypt_file_hybrid
 from decrypt import decrypt_file_hybrid, decrypt_file_rsa
 
+# Funkcja generująca klucze RSA i zapisująca je do plików.
 def generate_keys():
     global private_key, public_key
-    private_key, public_key = generate_rsa_keys()
+    private_key, public_key = generate_rsa_keys()  # Generowanie kluczy.
 
-    # Zapis kluczy do plików (opcjonalne)
+    # Zapis kluczy do plików.
     with open("private_key.pem", "wb") as priv_file:
         priv_file.write(private_key)
     with open("public_key.pem", "wb") as pub_file:
@@ -15,7 +16,7 @@ def generate_keys():
 
     messagebox.showinfo("Sukces", "Klucze RSA zostały wygenerowane i zapisane!")
 
-
+# Funkcja szyfrująca tekst wpisany w GUI i zapisująca go do pliku.
 def encrypt_text_to_file():
     if not public_key:
         messagebox.showerror("Błąd", "Najpierw wygeneruj klucze RSA!")
@@ -34,6 +35,7 @@ def encrypt_text_to_file():
         f.write(encrypted_text)
     messagebox.showinfo("Sukces", "Tekst został zaszyfrowany i zapisany do pliku.")
 
+# Funkcja szyfrująca plik.
 def encrypt_file_action():
     if not public_key:
         messagebox.showerror("Błąd", "Najpierw wygeneruj klucze RSA!")
@@ -51,7 +53,7 @@ def encrypt_file_action():
     except Exception as e:
         messagebox.showerror("Błąd", f"Nie udało się zaszyfrować pliku: {e}")
 
-
+# Funkcja deszyfrująca plik.
 def decrypt_file_action():
     if not private_key:
         messagebox.showerror("Błąd", "Najpierw wygeneruj klucze RSA!")
@@ -73,7 +75,7 @@ def decrypt_file_action():
     except Exception as e:
         messagebox.showerror("Błąd", f"Nie udało się odszyfrować pliku: {e}")
 
-
+# Konfiguracja GUI.
 private_key = None
 public_key = None
 

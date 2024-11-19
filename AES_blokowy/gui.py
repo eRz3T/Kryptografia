@@ -4,21 +4,19 @@ from AES_blokowy.encrypt import encrypt_file
 from AES_blokowy.decrypt import decrypt_file
 import os
 
-
+# Funkcja do pobierania klucza AES z pola tekstowego GUI.
 def get_key():
-    key = key_entry.get().encode()
+    key = key_entry.get().encode()  # Pobranie tekstu i zakodowanie jako bajty.
     if len(key) != 32:
+        # Wyświetlenie błędu, jeśli klucz nie spełnia wymagań.
         messagebox.showerror("Error", "Klucz AES musi mieć 32 znaki (256 bitów)!")
         return None
     return key
 
-
+# Funkcja obsługująca szyfrowanie pliku.
 def encrypt_file_action(input_path=None, output_path=None, key=None):
-    """
-    Funkcja do szyfrowania pliku. Może być wywołana z GUI lub testów.
-    """
     if not input_path or not output_path or not key:
-        # Wywołanie z GUI
+        # Obsługa interakcji z GUI (wybór pliku).
         input_path = filedialog.askopenfilename(title="Wybierz plik do zaszyfrowania")
         if not input_path:
             return
@@ -30,16 +28,13 @@ def encrypt_file_action(input_path=None, output_path=None, key=None):
             return
 
     encrypt_file(input_path, output_path, key)
-    if not input_path or not output_path:
-        messagebox.showinfo("Sukces", "Plik został zaszyfrowany i zapisany.")
+    # Informowanie użytkownika o sukcesie operacji.
+    messagebox.showinfo("Sukces", "Plik został zaszyfrowany i zapisany.")
 
-
+# Funkcja obsługująca deszyfrowanie pliku.
 def decrypt_file_action(input_path=None, output_path=None, key=None):
-    """
-    Funkcja do deszyfrowania pliku. Może być wywołana z GUI lub testów.
-    """
     if not input_path or not output_path or not key:
-        # Wywołanie z GUI
+        # Obsługa interakcji z GUI (wybór pliku).
         input_path = filedialog.askopenfilename(title="Wybierz plik do odszyfrowania")
         if not input_path:
             return
@@ -51,12 +46,12 @@ def decrypt_file_action(input_path=None, output_path=None, key=None):
             return
 
     decrypt_file(input_path, output_path, key)
-    if not input_path or not output_path:
-        messagebox.showinfo("Sukces", "Plik został odszyfrowany i zapisany.")
+    # Informowanie użytkownika o sukcesie operacji.
+    messagebox.showinfo("Sukces", "Plik został odszyfrowany i zapisany.")
 
-
+# Funkcja obsługująca szyfrowanie tekstu i zapisanie go do pliku.
 def encrypt_text_action():
-    text = text_entry.get("1.0", tk.END).encode()
+    text = text_entry.get("1.0", tk.END).encode()  # Pobranie tekstu z pola tekstowego.
     if not text.strip():
         messagebox.showerror("Error", "Tekst do zaszyfrowania nie może być pusty!")
         return
@@ -65,14 +60,14 @@ def encrypt_text_action():
         return
     key = get_key()
     if key:
+        # Tymczasowy zapis tekstu do pliku przed szyfrowaniem.
         with open("temp_text.txt", "wb") as temp_file:
             temp_file.write(text)
         encrypt_file("temp_text.txt", output_path, key)
-        os.remove("temp_text.txt")
+        os.remove("temp_text.txt")  # Usunięcie pliku tymczasowego.
         messagebox.showinfo("Sukces", "Tekst został zaszyfrowany i zapisany w pliku.")
 
-
-# GUI
+# Konfiguracja GUI.
 app = tk.Tk()
 app.title("AES Encrypt/Decrypt")
 
@@ -99,3 +94,4 @@ encrypt_text_button.pack()
 
 app.geometry("400x400")
 app.mainloop()
+

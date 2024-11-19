@@ -1,0 +1,31 @@
+1. Algorytm Diffiego-Hellmana
+Algorytm Diffiego-Hellmana to protokół wymiany kluczy używany do uzgadniania wspólnego klucza między dwoma stronami (np. Alicją i Bobem) w niezabezpieczonym kanale komunikacji.
+Proces:
+Strony uzgadniają wspólną liczbę pierwszą 
+𝑝
+p i generator 
+𝑔
+g.
+Każda strona generuje klucz prywatny i oblicza klucz publiczny.
+Klucz publiczny jest przesyłany drugiej stronie.
+Obie strony obliczają wspólny klucz współdzielony przy użyciu własnego klucza prywatnego i klucza publicznego drugiej strony.
+2. Funkcje programu
+diffie_hellman:
+
+Symuluje protokół Diffiego-Hellmana, generując klucze dla Alicji i Boba oraz obliczając wspólny klucz współdzielony.
+Używa przykładowych parametrów 
+𝑝
+=
+23
+p=23 (liczba pierwsza) i 
+𝑔
+=
+5
+g=5 (generator).
+Sprawdza, czy wspólny klucz jest zgodny po obu stronach.
+generate_shared_key:
+
+Pomocnicza funkcja do generowania kluczy lub obliczania klucza współdzielonego na podstawie kluczy publicznego i prywatnego.
+simulate_diffie_hellman:
+
+Wywołuje funkcję diffie_hellman i wyświetla wynik w graficznym oknie dialogowym.

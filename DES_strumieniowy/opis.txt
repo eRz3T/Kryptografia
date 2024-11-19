@@ -1,0 +1,95 @@
+1. Algorytm DES (Data Encryption Standard)
+Czym jest DES?
+DES (Data Encryption Standard) to symetryczny algorytm szyfrowania opracowany w latach 70. XX wieku przez IBM. Działa na blokach danych o długości 64 bitów (8 bajtów), wykorzystując klucz o długości 56 bitów (plus 8 bitów kontrolnych dla parzystości). DES jest uznawany za przestarzały, ale wciąż znajduje zastosowanie w celach edukacyjnych i w starszych systemach.
+
+Kluczowe cechy algorytmu DES:
+Szyfrowanie blokowe:
+
+Dane są przetwarzane w blokach o stałej długości 64 bitów.
+W przypadku, gdy dane są krótsze niż 64 bity, stosuje się metody wypełnienia (padding).
+Długość klucza:
+
+DES używa klucza o długości 64 bitów, ale tylko 56 bitów jest używanych do szyfrowania, a pozostałe 8 bitów służy jako bity kontrolne.
+Tryby pracy DES:
+
+Algorytm DES można stosować w różnych trybach. W tym programie używany jest tryb CFB (Cipher Feedback Mode), który działa strumieniowo i pozwala szyfrować dane o dowolnej długości.
+Tryb CFB (Cipher Feedback Mode):
+
+DES w trybie CFB nie wymaga, aby dane wejściowe były wielokrotnością 64 bitów.
+Każdy blok jest szyfrowany z użyciem wektora inicjalizującego (IV) i klucza DES.
+Dane są przetwarzane w sposób strumieniowy:
+Pierwszy blok danych jest szyfrowany przy użyciu IV.
+Wynik szyfrowania jest XOR-owany z pierwszym blokiem danych, tworząc szyfrogram.
+Kolejne bloki są szyfrowane w podobny sposób z użyciem wyników poprzednich operacji.
+Symetryczność:
+
+Ten sam klucz jest używany zarówno do szyfrowania, jak i deszyfrowania.
+2. Funkcjonowanie programu
+Program implementuje szyfrowanie i deszyfrowanie plików w trybie strumieniowym DES przy użyciu graficznego interfejsu użytkownika (GUI). Składa się z trzech głównych modułów:
+
+Moduł 1: encrypt.py – Szyfrowanie danych
+Wejście:
+
+Funkcja przyjmuje dane do zaszyfrowania oraz klucz DES (8 bajtów).
+Generowany jest losowy wektor inicjalizujący (IV) o długości 8 bajtów.
+Proces szyfrowania:
+
+Dane są dzielone na bloki po 8 bajtów.
+Każdy blok jest szyfrowany z użyciem DES w trybie CFB.
+Szyfrogram jest tworzony przez połączenie IV oraz zaszyfrowanych bloków danych.
+Wyjście:
+
+Funkcja zwraca ciąg bajtów zawierający IV i zaszyfrowane dane.
+Moduł 2: decrypt.py – Deszyfrowanie danych
+Wejście:
+
+Funkcja przyjmuje dane zaszyfrowane oraz klucz DES (8 bajtów).
+IV jest odczytywany z pierwszych 8 bajtów danych zaszyfrowanych.
+Proces deszyfrowania:
+
+Dane są dzielone na bloki po 8 bajtów (z pominięciem IV).
+Każdy blok jest odszyfrowywany przy użyciu DES w trybie CFB.
+Wyjście:
+
+Funkcja zwraca odszyfrowane dane.
+Moduł 3: gui.py – Graficzny interfejs użytkownika
+Program oferuje graficzny interfejs użytkownika zbudowany w bibliotece Tkinter, umożliwiający łatwe szyfrowanie i deszyfrowanie plików.
+
+Funkcje w GUI:
+
+Pobieranie klucza DES:
+Użytkownik wprowadza klucz w polu tekstowym.
+Klucz musi mieć dokładnie 8 znaków.
+Szyfrowanie pliku:
+Użytkownik wybiera plik do zaszyfrowania i lokalizację zapisu wyniku.
+Program odczytuje dane z pliku, szyfruje je i zapisuje wynik w wybranej lokalizacji.
+Deszyfrowanie pliku:
+Użytkownik wybiera plik zaszyfrowany i lokalizację zapisu wyniku.
+Program odczytuje dane zaszyfrowane, odszyfrowuje je i zapisuje wynik w wybranej lokalizacji.
+Obsługa błędów:
+
+Program sprawdza poprawność klucza (czy ma dokładnie 8 znaków).
+Informuje użytkownika o błędach lub sukcesie operacji.
+Interfejs:
+
+Przyciski do szyfrowania i deszyfrowania plików.
+Pole tekstowe do wprowadzania klucza.
+3. Przykład działania programu
+Szyfrowanie pliku
+Użytkownik uruchamia program i wybiera opcję "Zaszyfruj plik".
+Wskazuje plik wejściowy oraz lokalizację zapisu pliku wynikowego.
+Wprowadza klucz DES (dokładnie 8 znaków).
+Program:
+Generuje losowy IV.
+Szyfruje dane pliku blok po bloku.
+Zapisuje wynik (IV + zaszyfrowane dane) w wybranej lokalizacji.
+Użytkownik otrzymuje komunikat o sukcesie.
+Deszyfrowanie pliku
+Użytkownik wybiera opcję "Odszyfruj plik".
+Wskazuje plik zaszyfrowany oraz lokalizację zapisu pliku wynikowego.
+Wprowadza ten sam klucz DES (8 znaków).
+Program:
+Odczytuje IV z pierwszych 8 bajtów danych zaszyfrowanych.
+Odszyfrowuje dane blok po bloku.
+Zapisuje wynik w wybranej lokalizacji.
+Użytkownik otrzymuje komunikat o sukcesie.

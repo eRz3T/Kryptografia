@@ -4,15 +4,21 @@ import encrypt
 import decrypt
 
 def browse_file(entry):
+    """
+    Otwiera okno dialogowe do wyboru pliku i zapisuje jego ścieżkę w polu tekstowym.
+    """
     filename = filedialog.askopenfilename(title="Wybierz plik tekstowy", filetypes=[("Pliki tekstowe", "*.txt")])
     entry.delete(0, tk.END)
     entry.insert(0, filename)
 
 def encrypt_file():
+    """
+    Funkcja szyfrująca plik wybrany przez użytkownika.
+    """
     input_file = input_file_entry.get()
     output_file = output_file_entry.get()
     try:
-        key = int(key_entry.get())
+        key = int(key_entry.get())  # Weryfikacja klucza jako liczby całkowitej.
     except ValueError:
         messagebox.showerror("Błąd", "Klucz musi być liczbą całkowitą!")
         return
@@ -24,10 +30,13 @@ def encrypt_file():
         messagebox.showerror("Błąd", "Uzupełnij wszystkie pola!")
 
 def decrypt_file():
+    """
+    Funkcja odszyfrowująca plik wybrany przez użytkownika.
+    """
     input_file = input_file_entry.get()
     output_file = output_file_entry.get()
     try:
-        key = int(key_entry.get())
+        key = int(key_entry.get())  # Weryfikacja klucza jako liczby całkowitej.
     except ValueError:
         messagebox.showerror("Błąd", "Klucz musi być liczbą całkowitą!")
         return
@@ -39,9 +48,12 @@ def decrypt_file():
         messagebox.showerror("Błąd", "Uzupełnij wszystkie pola!")
 
 def encrypt_text_action():
+    """
+    Funkcja szyfrująca tekst wpisany przez użytkownika w GUI i zapisująca wynik w pliku.
+    """
     text = text_entry.get("1.0", tk.END).strip()
     try:
-        key = int(key_entry.get())
+        key = int(key_entry.get())  # Weryfikacja klucza jako liczby całkowitej.
     except ValueError:
         messagebox.showerror("Błąd", "Klucz musi być liczbą całkowitą!")
         return
@@ -57,9 +69,11 @@ def encrypt_text_action():
             file.write(encrypted_text)
         messagebox.showinfo("Sukces", "Tekst został zaszyfrowany i zapisany w pliku!")
 
+# Tworzenie GUI
 window = tk.Tk()
 window.title("Szyfrowanie i deszyfrowanie plików (Szyfr Transpozycyjny)")
 
+# Dodanie elementów interfejsu
 tk.Label(window, text="Plik wejściowy:").grid(row=0, column=0, padx=10, pady=10)
 input_file_entry = tk.Entry(window, width=40)
 input_file_entry.grid(row=0, column=1, padx=10, pady=10)
@@ -78,8 +92,10 @@ tk.Label(window, text="Tekst do szyfrowania:").grid(row=3, column=0, columnspan=
 text_entry = tk.Text(window, height=10, width=50)
 text_entry.grid(row=4, column=0, columnspan=3, padx=10, pady=10)
 
+# Przyciski akcji
 tk.Button(window, text="Szyfruj plik", command=encrypt_file).grid(row=5, column=0, padx=10, pady=10)
 tk.Button(window, text="Deszyfruj plik", command=decrypt_file).grid(row=5, column=1, padx=10, pady=10)
 tk.Button(window, text="Szyfruj tekst do pliku", command=encrypt_text_action).grid(row=6, column=0, padx=10, pady=10)
 
+# Uruchomienie interfejsu graficznego
 window.mainloop()

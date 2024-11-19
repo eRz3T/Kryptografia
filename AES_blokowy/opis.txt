@@ -1,0 +1,73 @@
+Opis algorytmu i funkcjonowania programu
+Ten program implementuje szyfrowanie i deszyfrowanie plików oraz tekstów za pomocą algorytmu AES (Advanced Encryption Standard) w trybie EAX, który zapewnia zarówno poufność, jak i integralność danych.
+
+1. AES (Advanced Encryption Standard)
+AES to popularny algorytm szyfrowania symetrycznego używany do ochrony danych. Program działa na bazie kilku podstawowych elementów:
+
+Klucz szyfrujący: W naszym przypadku musi mieć 256 bitów (32 bajty). Klucz ten jest używany zarówno do szyfrowania, jak i deszyfrowania.
+Tryb pracy EAX: Używany w programie tryb zapewnia:
+Szyfrowanie danych (poufność).
+Generowanie znacznika uwierzytelnienia (tag), który umożliwia weryfikację integralności danych.
+Nonce: To unikalny wektor inicjalizujący generowany przy każdym szyfrowaniu, aby uczynić wyniki szyfrowania niereplikowalnymi.
+
+2. Struktura programu
+Program składa się z trzech głównych modułów:
+
+encrypt.py: Moduł odpowiedzialny za szyfrowanie plików.
+decrypt.py: Moduł odpowiedzialny za deszyfrowanie plików.
+gui.py: Graficzny interfejs użytkownika (GUI) do obsługi szyfrowania i deszyfrowania plików oraz tekstu.
+
+3. Funkcjonalność programu
+Moduł encrypt.py
+Odczytuje zawartość pliku, który ma być zaszyfrowany.
+Szyfruje dane za pomocą AES w trybie EAX:
+Generuje nonce (unikalny wektor inicjalizujący) oraz tag (znacznik uwierzytelnienia).
+Zaszyfrowane dane są przygotowane w formie binarnej.
+Zapisuje wyniki do pliku wyjściowego w strukturze:
+Nonce (16 bajtów).
+Tag (16 bajtów).
+Ciphertext (zaszyfrowana zawartość pliku).
+Zabezpiecza przed błędami, np. brakującym plikiem wejściowym lub niewłaściwym kluczem.
+Moduł decrypt.py
+Odczytuje dane z pliku zaszyfrowanego.
+Wyodrębnia:
+Nonce: Wektor inicjalizujący potrzebny do deszyfrowania.
+Tag: Używany do weryfikacji integralności danych.
+Ciphertext: Zaszyfrowaną zawartość.
+Dekoduje dane przy użyciu klucza AES i zwraca oryginalne dane, jeśli weryfikacja integralności powiedzie się.
+Zapisuje odszyfrowane dane do pliku wyjściowego.
+Moduł gui.py
+Udostępnia graficzny interfejs użytkownika zbudowany przy użyciu biblioteki Tkinter.
+Użytkownik może:
+Szyfrować pliki (wybierając plik wejściowy i lokalizację zapisu).
+Deszyfrować pliki (wybierając plik wejściowy i lokalizację zapisu).
+Szyfrować tekst (wpisany w polu tekstowym) i zapisywać go jako zaszyfrowany plik.
+Weryfikuje długość klucza (32 znaki) i ostrzega użytkownika w przypadku błędu.
+
+4. Jak program funkcjonuje?
+Szyfrowanie pliku
+Użytkownik podaje klucz (lub program generuje losowy klucz).
+Plik wejściowy jest czytany w trybie binarnym.
+Dane są szyfrowane za pomocą AES w trybie EAX:
+Generowany jest nonce oraz tag.
+Zaszyfrowane dane (ciphertext) są tworzone.
+Wyniki są zapisywane do pliku wyjściowego.
+Deszyfrowanie pliku
+Użytkownik podaje klucz oraz wskazuje plik zaszyfrowany.
+Program odczytuje plik i wyodrębnia nonce, tag i ciphertext.
+Za pomocą klucza AES w trybie EAX dane są odszyfrowywane.
+Wyniki są zapisane do pliku wyjściowego.
+GUI (graficzny interfejs)
+Pozwala użytkownikowi na interakcję bez znajomości kodu.
+Automatycznie obsługuje szyfrowanie/deszyfrowanie plików oraz tekstów.
+Weryfikuje poprawność klucza.
+
+5. Dlaczego tryb EAX?
+Poufność: Dane są zaszyfrowane, dzięki czemu osoby postronne nie mogą ich odczytać.
+Integralność: tag pozwala upewnić się, że dane nie zostały zmodyfikowane podczas przesyłania.
+
+6. Bezpieczeństwo programu
+Używa losowo generowanego nonce, co eliminuje ryzyko powtarzalności szyfrowania przy użyciu tego samego klucza.
+Klucz 256-bitowy (AES-256) jest bardzo trudny do złamania.
+Dane są chronione przed modyfikacjami dzięki tagowi uwierzytelnienia.
+Program jest elastyczny i umożliwia zarówno automatyczne szyfrowanie/deszyfrowanie w terminalu, jak i obsługę użytkownika przez graficzny interfejs.
