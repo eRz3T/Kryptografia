@@ -22,6 +22,17 @@ source <NAZWA_FOLDERU>/bin/activate
 cd <NAZWA_FOLDERU>/
 ```
 ```
+python -m venv venv
+```
+### windows
+```
+venv\Scripts\activate
+```
+### linux
+```
+source venv/bin/activate
+```
+```
 python gui.py
 ```
 ## Testowanie
