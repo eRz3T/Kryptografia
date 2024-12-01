@@ -2,10 +2,11 @@ import tkinter as tk
 from tkinter import filedialog, messagebox
 from PyPDF2 import PdfReader
 from cryptography import x509
-from cryptography.hazmat.primitives import serialization, hashes
+from cryptography.hazmat.primitives.serialization.pkcs7 import load_der_pkcs7_certificates
 from cryptography.hazmat.backends import default_backend
 from datetime import datetime
 import base64
+
 
 def format_pdf_date(pdf_date):
     """
@@ -19,27 +20,49 @@ def format_pdf_date(pdf_date):
     except ValueError:
         return pdf_date  # Jeśli format nie jest standardowy, zwróć oryginalny
 
-def parse_certificate(cert_bytes):
+
+def parse_pkcs7_certificates(contents):
     """
-    Analizuje certyfikat X.509 i zwraca szczegóły.
+    Parsuje certyfikaty z danych PKCS#7.
     """
     try:
-        cert = x509.load_der_x509_certificate(cert_bytes, default_backend())
-        cert_details = {
-            "Wystawca (Issuer)": cert.issuer.rfc4514_string(),
-            "Podmiot (Subject)": cert.subject.rfc4514_string(),
-            "Algorytm Podpisu": cert.signature_algorithm_oid._name,
-            "Data Ważności Od": cert.not_valid_before.strftime("%Y-%m-%d"),
-            "Data Ważności Do": cert.not_valid_after.strftime("%Y-%m-%d"),
-            "Klucz Publiczny": cert.public_key().public_bytes(
-                serialization.Encoding.PEM, serialization.PublicFormat.SubjectPublicKeyInfo
-            ).decode('utf-8'),
-        }
+        certs = load_der_pkcs7_certificates(contents)
+        if not certs:
+            return "Brak certyfikatów w danych PKCS#7."
+        cert_details = []
+        for cert in certs:
+            cert_details.append({
+                "Wystawca (Issuer)": cert.issuer.rfc4514_string(),
+                "Podmiot (Subject)": cert.subject.rfc4514_string(),
+                "Algorytm Podpisu": cert.signature_algorithm_oid._name,
+                "Data Ważności Od": cert.not_valid_before.strftime("%Y-%m-%d"),
+                "Data Ważności Do": cert.not_valid_after.strftime("%Y-%m-%d"),
+            })
         return cert_details
     except Exception as e:
-        return {"Błąd": str(e)}
+        return {"Błąd podczas parsowania PKCS#7": str(e)}
+
+
+def debug_signature(sig):
+    """
+    Wyświetla pełną strukturę podpisu cyfrowego dla diagnostyki.
+    """
+    print("\n--- Debugowanie podpisu ---")
+    for key, value in sig.items():
+        try:
+            if isinstance(value, bytes):
+                print(f"{key}: {value[:100]}... (truncated)")
+            else:
+                print(f"{key}: {value}")
+        except Exception as e:
+            print(f"{key}: Błąd podczas odczytu: {e}")
+    print("--- Koniec debugowania podpisu ---\n")
+
 
 def extract_signature_details(file_path):
+    """
+    Wyciąga szczegóły podpisów z pliku PDF i próbuje znaleźć dane certyfikatu.
+    """
     try:
         reader = PdfReader(file_path)
         root = reader.trailer['/Root'].get_object()
@@ -53,17 +76,23 @@ def extract_signature_details(file_path):
                     field_obj = field.get_object()
                     if '/V' in field_obj:
                         sig = field_obj['/V'].get_object()
+                        debug_signature(sig)  # Debugowanie podpisu
                         signature_info = {
                             "Podpisujący": sig.get('/Name', 'Brak danych'),
                             "Powód": sig.get('/Reason', 'Brak danych'),
                             "Data": format_pdf_date(sig.get('/M', 'Brak danych')),
                             "Lokalizacja": sig.get('/Location', 'Brak danych'),
                         }
-                        if '/Cert' in sig:  # Sprawdzanie, czy podpis zawiera certyfikat
-                            cert_data = sig['/Cert']
-                            if isinstance(cert_data, list) and len(cert_data) > 0:
-                                cert_bytes = cert_data[0].get_object().get_data()
-                                signature_info["Certyfikat"] = parse_certificate(cert_bytes)
+                        # Próbujemy odczytać dane z /Contents jako PKCS#7
+                        if '/Contents' in sig:
+                            contents = sig['/Contents']
+                            try:
+                                cert_details = parse_pkcs7_certificates(contents)
+                                signature_info["Certyfikat"] = cert_details
+                            except Exception as e:
+                                signature_info["Certyfikat"] = {"Błąd": str(e)}
+                        else:
+                            signature_info["Certyfikat"] = "Dane podpisu nie zawierają certyfikatu."
                         signatures.append(signature_info)
                 return signatures if signatures else None
         return None
@@ -84,15 +113,26 @@ def display_signature_details(signatures):
             details_text.insert(tk.END, f"  Data: {signature.get('Data', 'Brak danych')}\n")
             details_text.insert(tk.END, f"  Lokalizacja: {signature.get('Lokalizacja', 'Brak danych')}\n")
             cert = signature.get("Certyfikat", {})
-            if cert:
+            if isinstance(cert, list):
+                details_text.insert(tk.END, f"  Certyfikat:\n")
+                for cert_detail in cert:
+                    for key, value in cert_detail.items():
+                        details_text.insert(tk.END, f"    {key}: {value}\n")
+            elif isinstance(cert, dict):
                 details_text.insert(tk.END, f"  Certyfikat:\n")
                 for key, value in cert.items():
                     details_text.insert(tk.END, f"    {key}: {value}\n")
+            else:
+                details_text.insert(tk.END, f"  Certyfikat: {cert}\n")
             details_text.insert(tk.END, "\n")
     else:
         details_text.insert(tk.END, "Nie znaleziono podpisów cyfrowych.\n")
 
+
 def select_pdf():
+    """
+    Otwiera okno wyboru pliku PDF i wyświetla szczegóły podpisu.
+    """
     file_path = filedialog.askopenfilename(
         filetypes=[("PDF files", "*.pdf")],
         title="Wybierz plik PDF"
@@ -113,7 +153,7 @@ def select_pdf():
 # Tworzenie GUI
 app = tk.Tk()
 app.title("Odczyt podpisów cyfrowych z PDF")
-app.geometry("800x600")
+app.geometry("750x470")
 
 tk.Label(app, text="Wybierz plik PDF, aby odczytać podpis cyfrowy:").pack(pady=10)
 tk.Button(app, text="Wybierz PDF", command=select_pdf).pack(pady=10)

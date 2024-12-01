@@ -11,7 +11,7 @@ python3 -m venv <NAZWA_FOLDERU>
 ```
 ### 2.1 Instalacja niezbędnych paczek python
 ```
-pip install pycryptodome
+pip install pycryptodome cryptography PyPDF2 pikepdf
 ```
 ## 3. Uruchomienie środowiska wirtualnego
 ```
