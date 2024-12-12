@@ -36,69 +36,68 @@ def diffie_hellman(p, g):
     return K_alice
 
 
-def generate_shared_key(public=None, private=None):
-    """
-    Funkcja wspomagająca generowanie kluczy lub obliczanie klucza współdzielonego.
-
-    Parametry:
-    - public: klucz publiczny (opcjonalny).
-    - private: klucz prywatny (opcjonalny).
-
-    Jeśli oba parametry są None, generuje klucz publiczny i prywatny.
-    Jeśli oba parametry są podane, oblicza klucz współdzielony.
-    
-    Zwraca:
-    - Klucz publiczny i prywatny lub klucz współdzielony w zależności od trybu.
-    """
-    prime = 23  # Przykładowa liczba pierwsza (moduł p).
-    base = 5  # Generator (g).
-
-    if public is None and private is None:
-        # Generowanie kluczy publicznych i prywatnych.
-        private_key = random.randint(1, prime - 1)
-        public_key = pow(base, private_key, prime)
-        return public_key, private_key
-    elif public is not None and private is not None:
-        # Obliczanie klucza współdzielonego.
-        shared_key = pow(public, private, prime)
-        return shared_key
-    else:
-        # Jeśli niepoprawne argumenty, zgłaszamy błąd.
-        raise ValueError("Podaj zarówno klucz publiczny, jak i prywatny, aby obliczyć klucz współdzielony.")
-
-
 def simulate_diffie_hellman():
     """
     Symulacja protokołu Diffiego-Hellmana z wykorzystaniem przykładowych parametrów.
-    Wyświetla wynik w oknie dialogowym.
+    Wyświetla wynik w sekcji przebiegu i klucza.
     """
+    progress_text.delete("1.0", tk.END)  # Czyszczenie okna przebiegu
+
     p = 23  # Przykładowa liczba pierwsza (moduł).
     g = 5  # Przykładowy generator (podstawa).
 
     try:
-        # Wywołanie funkcji do symulacji Diffiego-Hellmana.
-        shared_key = diffie_hellman(p, g)
-        # Wyświetlenie wyniku: wspólny klucz obliczony przez Alicję i Boba.
-        messagebox.showinfo("Wynik", f"Alicja i Bob dzielą wspólny klucz: {shared_key}")
+        x = random.randint(1, p - 1)
+        y = random.randint(1, p - 1)
+        A = pow(g, x, p)
+        B = pow(g, y, p)
+        shared_key = pow(B, x, p)
+
+        # Wyświetlanie przebiegu
+        progress_text.insert(tk.END, f"Parametry protokołu: p = {p}, g = {g}\n")
+        progress_text.insert(tk.END, f"Alicja wybiera klucz prywatny x = {x}\n")
+        progress_text.insert(tk.END, f"Bob wybiera klucz prywatny y = {y}\n")
+        progress_text.insert(tk.END, f"Alicja oblicza klucz publiczny A = g^x mod p = {A}\n")
+        progress_text.insert(tk.END, f"Bob oblicza klucz publiczny B = g^y mod p = {B}\n")
+        progress_text.insert(tk.END, f"Alicja oblicza wspólny klucz K = B^x mod p = {shared_key}\n")
+        progress_text.insert(tk.END, f"Bob oblicza wspólny klucz K = A^y mod p = {shared_key}\n")
+
+        # Wyświetlanie klucza
+        key_text.set(f"Wspólny klucz: {shared_key}")
     except AssertionError as e:
-        # Wyświetlenie błędu, jeśli klucze się nie zgadzają.
         messagebox.showerror("Błąd", str(e))
 
 
-# Konfiguracja graficznego interfejsu użytkownika (GUI).
+# Konfiguracja GUI
 app = tk.Tk()
-app.title("Symulacja protokołu Diffiego-Hellmana")
+app.title("Diffie-Hellman - symulacja")
+app.geometry("700x500")
 
-# Etykieta wyświetlana w oknie GUI.
-label = tk.Label(app, text="Kliknij 'Symuluj', aby wygenerować wspólny klucz.")
-label.pack(pady=10)
+# Główny kontener
+main_frame = tk.Frame(app, padx=10, pady=10)
+main_frame.pack(fill="both", expand=True, padx=10, pady=10)
 
-# Przycisk uruchamiający symulację Diffiego-Hellmana.
-simulate_button = tk.Button(app, text="Symuluj", command=simulate_diffie_hellman)
-simulate_button.pack(pady=10)
+# Sekcja generowania
+generate_frame = tk.LabelFrame(main_frame, text="Generowanie", padx=10, pady=10)
+generate_frame.pack(fill="x", pady=10)
 
-# Ustawienie rozmiaru okna GUI.
-app.geometry("300x150")
+generate_button = tk.Button(generate_frame, text="Symuluj Diffie-Hellman", command=simulate_diffie_hellman)
+generate_button.pack()
 
-# Uruchomienie pętli głównej GUI.
+# Sekcja przebiegu
+progress_frame = tk.LabelFrame(main_frame, text="Przebieg protokołu", padx=10, pady=10)
+progress_frame.pack(fill="both", expand=True, pady=10)
+
+progress_text = tk.Text(progress_frame, wrap=tk.WORD, height=15, width=80)
+progress_text.pack(fill="both", expand=True)
+
+# Sekcja klucza
+key_frame = tk.LabelFrame(main_frame, text="Klucz", padx=10, pady=10)
+key_frame.pack(fill="x", pady=10)
+
+key_text = tk.StringVar()
+key_label = tk.Label(key_frame, textvariable=key_text, wraplength=650, justify="center")
+key_label.pack()
+
+# Uruchomienie aplikacji
 app.mainloop()

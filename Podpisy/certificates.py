@@ -152,18 +152,30 @@ def select_pdf():
 
 # Tworzenie GUI
 app = tk.Tk()
-app.title("Odczyt podpisów cyfrowych z PDF")
-app.geometry("750x470")
+app.title("Podpisy cyfrowe - czytnik")
+app.geometry("520x680")
 
-tk.Label(app, text="Wybierz plik PDF, aby odczytać podpis cyfrowy:").pack(pady=10)
-tk.Button(app, text="Wybierz PDF", command=select_pdf).pack(pady=10)
+# Kontener na sekcje
+main_frame = tk.Frame(app, padx=10, pady=10)
+main_frame.pack(fill="both", expand=True, padx=10, pady=10)
+
+# Sekcja odczytu pliku
+file_frame = tk.LabelFrame(main_frame, text="Odczyt pliku PDF", padx=10, pady=10)
+file_frame.pack(fill="x", pady=10)
+
+file_button = tk.Button(file_frame, text="Wybierz plik PDF, aby odczytać podpis cyfrowy", command=select_pdf)
+file_button.pack(fill="x", pady=5)
 
 result_text = tk.StringVar()
-result_label = tk.Label(app, textvariable=result_text, wraplength=750, justify="center")
-result_label.pack(pady=10)
+result_label = tk.Label(file_frame, textvariable=result_text, wraplength=750, justify="left")
+result_label.pack(anchor="w")
 
-details_text = tk.Text(app, wrap=tk.WORD, height=20, width=90)
-details_text.pack(pady=10)
+# Sekcja szczegółów certyfikatów
+cert_frame = tk.LabelFrame(main_frame, text="Szczegóły podpisów cyfrowych", padx=10, pady=10)
+cert_frame.pack(fill="both", expand=True, pady=10)
+
+details_text = tk.Text(cert_frame, wrap=tk.WORD, height=20, width=90)
+details_text.pack(fill="both", expand=True)
 
 # Uruchomienie aplikacji
 app.mainloop()

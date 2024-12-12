@@ -2,100 +2,154 @@ import tkinter as tk
 from tkinter import filedialog, messagebox
 import encrypt
 import decrypt
+import time  # Dodano moduł do pomiaru czasu
+import random
+import string
+import pyperclip  # Do obsługi schowka
 
-def browse_file(entry):
-    """
-    Otwiera okno dialogowe do wyboru pliku i zapisuje jego ścieżkę w polu tekstowym.
-    """
-    filename = filedialog.askopenfilename(title="Wybierz plik tekstowy", filetypes=[("Pliki tekstowe", "*.txt")])
-    entry.delete(0, tk.END)
-    entry.insert(0, filename)
+# Funkcja do generowania losowego klucza transpozycyjnego.
+def generate_key():
+    key = random.randint(2, 50)  # Generowanie losowego klucza w zakresie 2-50 (liczba kolumn).
+    key_entry.delete(0, tk.END)  # Wyczyść pole klucza
+    key_entry.insert(0, str(key))  # Wstaw wygenerowany klucz
 
-def encrypt_file():
-    """
-    Funkcja szyfrująca plik wybrany przez użytkownika.
-    """
-    input_file = input_file_entry.get()
-    output_file = output_file_entry.get()
-    try:
-        key = int(key_entry.get())  # Weryfikacja klucza jako liczby całkowitej.
-    except ValueError:
-        messagebox.showerror("Błąd", "Klucz musi być liczbą całkowitą!")
-        return
-
-    if input_file and output_file and key:
-        encrypt.encrypt_text_file(input_file, output_file, key)
-        messagebox.showinfo("Sukces", "Plik został zaszyfrowany!")
+# Funkcja do kopiowania klucza do schowka.
+def copy_key():
+    key = key_entry.get()
+    if key:
+        pyperclip.copy(key)
+        messagebox.showinfo("Sukces", "Klucz został skopiowany do schowka.")
     else:
-        messagebox.showerror("Błąd", "Uzupełnij wszystkie pola!")
+        messagebox.showerror("Błąd", "Nie ma klucza do skopiowania!")
 
-def decrypt_file():
-    """
-    Funkcja odszyfrowująca plik wybrany przez użytkownika.
-    """
-    input_file = input_file_entry.get()
-    output_file = output_file_entry.get()
+# Funkcja do pobierania klucza transpozycyjnego z pola tekstowego GUI.
+def get_key():
     try:
-        key = int(key_entry.get())  # Weryfikacja klucza jako liczby całkowitej.
+        key = int(key_entry.get())
+        if key < 2:
+            raise ValueError
     except ValueError:
-        messagebox.showerror("Błąd", "Klucz musi być liczbą całkowitą!")
+        messagebox.showerror("Błąd", "Klucz musi być liczbą całkowitą większą od 1!")
+        return None
+    return key
+
+# Funkcja obsługująca szyfrowanie pliku.
+def encrypt_file_action():
+    file_path = filedialog.askopenfilename(title="Wybierz plik do zaszyfrowania")
+    if not file_path:
         return
+    output_path = filedialog.asksaveasfilename(title="Zapisz zaszyfrowany plik jako", defaultextension=".txt")
+    if not output_path:
+        return
+    key = get_key()
+    if key:
+        with open(file_path, 'r') as f:
+            data = f.read()
 
-    if input_file and output_file and key:
-        decrypt.decrypt_text_file(input_file, output_file, key)
-        messagebox.showinfo("Sukces", "Plik został odszyfrowany!")
-    else:
-        messagebox.showerror("Błąd", "Uzupełnij wszystkie pola!")
+        start_time = time.time()
+        encrypted_data = encrypt.encrypt_message(data, key)
+        end_time = time.time()
 
+        with open(output_path, 'w') as f:
+            f.write(encrypted_data)
+
+        elapsed_time = end_time - start_time
+        print(f"Szyfrowanie pliku '{file_path}' zajęło: {elapsed_time:.2f} sekund.")
+        messagebox.showinfo("Sukces", "Plik został zaszyfrowany i zapisany.")
+
+# Funkcja obsługująca deszyfrowanie pliku.
+def decrypt_file_action():
+    file_path = filedialog.askopenfilename(title="Wybierz plik do odszyfrowania")
+    if not file_path:
+        return
+    output_path = filedialog.asksaveasfilename(title="Zapisz odszyfrowany plik jako", defaultextension=".txt")
+    if not output_path:
+        return
+    key = get_key()
+    if key:
+        with open(file_path, 'r') as f:
+            data = f.read()
+
+        start_time = time.time()
+        decrypted_data = decrypt.decrypt_message(data, key)
+        end_time = time.time()
+
+        with open(output_path, 'w') as f:
+            f.write(decrypted_data)
+
+        elapsed_time = end_time - start_time
+        print(f"Deszyfrowanie pliku '{file_path}' zajęło: {elapsed_time:.2f} sekund.")
+        messagebox.showinfo("Sukces", "Plik został odszyfrowany i zapisany.")
+
+# Funkcja obsługująca szyfrowanie tekstu wpisanego w GUI.
 def encrypt_text_action():
-    """
-    Funkcja szyfrująca tekst wpisany przez użytkownika w GUI i zapisująca wynik w pliku.
-    """
     text = text_entry.get("1.0", tk.END).strip()
-    try:
-        key = int(key_entry.get())  # Weryfikacja klucza jako liczby całkowitej.
-    except ValueError:
-        messagebox.showerror("Błąd", "Klucz musi być liczbą całkowitą!")
-        return
-
     if not text:
         messagebox.showerror("Błąd", "Pole tekstu do zaszyfrowania nie może być puste!")
         return
-
-    output_file = filedialog.asksaveasfilename(title="Zapisz zaszyfrowany tekst jako", defaultextension=".txt")
-    if output_file:
+    output_path = filedialog.asksaveasfilename(title="Zapisz zaszyfrowany tekst jako", defaultextension=".txt")
+    if not output_path:
+        return
+    key = get_key()
+    if key:
+        start_time = time.time()
         encrypted_text = encrypt.encrypt_message(text, key)
-        with open(output_file, 'w') as file:
-            file.write(encrypted_text)
+        end_time = time.time()
+
+        with open(output_path, 'w') as f:
+            f.write(encrypted_text)
+
+        elapsed_time = end_time - start_time
+        print(f"Szyfrowanie tekstu zajęło: {elapsed_time:.2f} sekund.")
         messagebox.showinfo("Sukces", "Tekst został zaszyfrowany i zapisany w pliku!")
 
-# Tworzenie GUI
-window = tk.Tk()
-window.title("Szyfrowanie i deszyfrowanie plików (Szyfr Transpozycyjny)")
+# Konfiguracja graficznego interfejsu użytkownika.
+app = tk.Tk()
+app.title("Szyfr Transpozycyjny")
 
-# Dodanie elementów interfejsu
-tk.Label(window, text="Plik wejściowy:").grid(row=0, column=0, padx=10, pady=10)
-input_file_entry = tk.Entry(window, width=40)
-input_file_entry.grid(row=0, column=1, padx=10, pady=10)
-tk.Button(window, text="Wybierz", command=lambda: browse_file(input_file_entry)).grid(row=0, column=2, padx=10, pady=10)
+# Główny kontener
+main_frame = tk.Frame(app, padx=10, pady=10)
+main_frame.pack(fill="both", expand=True, padx=10, pady=10)
 
-tk.Label(window, text="Plik wyjściowy:").grid(row=1, column=0, padx=10, pady=10)
-output_file_entry = tk.Entry(window, width=40)
-output_file_entry.grid(row=1, column=1, padx=10, pady=10)
-tk.Button(window, text="Wybierz", command=lambda: browse_file(output_file_entry)).grid(row=1, column=2, padx=10, pady=10)
+# Sekcja klucza
+key_frame = tk.LabelFrame(main_frame, text="Klucz transpozycyjny", padx=10, pady=10)
+key_frame.pack(fill="x", pady=10)
 
-tk.Label(window, text="Klucz szyfrowania (ilość kolumn):").grid(row=2, column=0, padx=10, pady=10)
-key_entry = tk.Entry(window, width=40)
-key_entry.grid(row=2, column=1, padx=10, pady=10)
+key_label = tk.Label(key_frame, text="Klucz (liczba kolumn):")
+key_label.pack(anchor="center", pady=5)
 
-tk.Label(window, text="Tekst do szyfrowania:").grid(row=3, column=0, columnspan=3, padx=10, pady=10)
-text_entry = tk.Text(window, height=10, width=50)
-text_entry.grid(row=4, column=0, columnspan=3, padx=10, pady=10)
+key_entry = tk.Entry(key_frame, width=50)
+key_entry.pack(fill="x", pady=5)
 
-# Przyciski akcji
-tk.Button(window, text="Szyfruj plik", command=encrypt_file).grid(row=5, column=0, padx=10, pady=10)
-tk.Button(window, text="Deszyfruj plik", command=decrypt_file).grid(row=5, column=1, padx=10, pady=10)
-tk.Button(window, text="Szyfruj tekst do pliku", command=encrypt_text_action).grid(row=6, column=0, padx=10, pady=10)
+generate_key_button = tk.Button(key_frame, text="Wygeneruj klucz", command=generate_key)
+generate_key_button.pack(fill="x", pady=5)
 
-# Uruchomienie interfejsu graficznego
-window.mainloop()
+copy_key_button = tk.Button(key_frame, text="Kopiuj klucz", command=copy_key)
+copy_key_button.pack(fill="x", pady=5)
+
+# Sekcja tekstu
+text_frame = tk.LabelFrame(main_frame, text="Operacje na tekście", padx=10, pady=10)
+text_frame.pack(fill="x", pady=10)
+
+text_label = tk.Label(text_frame, text="Tekst do szyfrowania:")
+text_label.pack(anchor="w", pady=5)
+
+text_entry = tk.Text(text_frame, height=10, width=50)
+text_entry.pack(fill="x", pady=5)
+
+encrypt_text_button = tk.Button(text_frame, text="Zaszyfruj tekst do pliku", command=encrypt_text_action)
+encrypt_text_button.pack(fill="x", pady=5)
+
+# Sekcja plików
+file_frame = tk.LabelFrame(main_frame, text="Operacje na plikach", padx=10, pady=10)
+file_frame.pack(fill="x", pady=10)
+
+encrypt_button = tk.Button(file_frame, text="Zaszyfruj plik", command=encrypt_file_action)
+encrypt_button.pack(fill="x", pady=5)
+
+decrypt_button = tk.Button(file_frame, text="Odszyfruj plik", command=decrypt_file_action)
+decrypt_button.pack(fill="x", pady=5)
+
+# Rozmiar okna
+app.geometry("520x700")
+app.mainloop()

@@ -2,95 +2,118 @@ import tkinter as tk
 from tkinter import filedialog, messagebox
 from encrypt import encrypt_stream
 from decrypt import decrypt_stream
+import time  # Dodano moduł do pomiaru czasu
+import random
+import string
+import pyperclip  # Do obsługi schowka
+
+# Funkcja do generowania losowego klucza DES.
+def generate_key():
+    key = ''.join(random.choices(string.ascii_letters + string.digits, k=8))
+    key_entry.delete(0, tk.END)  # Wyczyść pole klucza
+    key_entry.insert(0, key)  # Wstaw wygenerowany klucz
+
+# Funkcja do kopiowania klucza do schowka.
+def copy_key():
+    key = key_entry.get()
+    if key:
+        pyperclip.copy(key)
+        messagebox.showinfo("Sukces", "Klucz został skopiowany do schowka.")
+    else:
+        messagebox.showerror("Błąd", "Nie ma klucza do skopiowania!")
 
 # Funkcja do pobierania klucza DES z pola tekstowego GUI.
 def get_key():
-    # Pobranie klucza z pola tekstowego i zakodowanie go jako bajty.
-    key = key_entry.get().encode()
-    
-    # Sprawdzenie, czy klucz ma dokładnie 8 znaków (64 bity).
-    if len(key) != 8:
+    key = key_entry.get().encode()  # Pobranie klucza i zakodowanie jako bajty.
+    if len(key) != 8:  # Sprawdzenie długości klucza.
         messagebox.showerror("Error", "Klucz DES musi mieć 8 znaków!")
-        return None  # Zwracamy `None`, jeśli klucz jest nieprawidłowy.
+        return None
     return key
 
 # Funkcja obsługująca szyfrowanie pliku.
 def encrypt_file_action():
-    # Wyświetlenie okna dialogowego do wyboru pliku wejściowego.
     file_path = filedialog.askopenfilename(title="Wybierz plik do zaszyfrowania")
-    if not file_path:  # Jeśli użytkownik anulował wybór, kończymy funkcję.
+    if not file_path:
         return
-    
-    # Wyświetlenie okna dialogowego do wyboru lokalizacji pliku wyjściowego.
     output_path = filedialog.asksaveasfilename(title="Zapisz zaszyfrowany plik jako")
     if not output_path:
         return
-    
-    # Pobranie klucza DES od użytkownika.
     key = get_key()
     if key:
-        # Odczytanie zawartości pliku w trybie binarnym.
         with open(file_path, 'rb') as f:
             data = f.read()
         
-        # Szyfrowanie danych za pomocą funkcji `encrypt_stream`.
+        # Pomiar czasu szyfrowania
+        start_time = time.time()
         encrypted_data = encrypt_stream(data, key)
-        
-        # Zapisanie zaszyfrowanych danych do pliku wyjściowego.
+        end_time = time.time()
+        elapsed_time = end_time - start_time
+
         with open(output_path, 'wb') as f:
             f.write(encrypted_data)
         
-        # Powiadomienie użytkownika o sukcesie operacji.
+        print(f"Szyfrowanie pliku '{file_path}' zajęło: {elapsed_time:.2f} sekund.")
         messagebox.showinfo("Sukces", "Plik został zaszyfrowany i zapisany.")
 
 # Funkcja obsługująca deszyfrowanie pliku.
 def decrypt_file_action():
-    # Wyświetlenie okna dialogowego do wyboru pliku zaszyfrowanego.
     file_path = filedialog.askopenfilename(title="Wybierz plik do odszyfrowania")
     if not file_path:
         return
-    
-    # Wyświetlenie okna dialogowego do wyboru lokalizacji pliku wyjściowego.
     output_path = filedialog.asksaveasfilename(title="Zapisz odszyfrowany plik jako")
     if not output_path:
         return
-    
-    # Pobranie klucza DES od użytkownika.
     key = get_key()
     if key:
-        # Odczytanie zawartości pliku zaszyfrowanego w trybie binarnym.
         with open(file_path, 'rb') as f:
             encrypted_data = f.read()
         
-        # Deszyfrowanie danych za pomocą funkcji `decrypt_stream`.
+        # Pomiar czasu deszyfrowania
+        start_time = time.time()
         decrypted_data = decrypt_stream(encrypted_data, key)
-        
-        # Zapisanie odszyfrowanych danych do pliku wyjściowego.
+        end_time = time.time()
+        elapsed_time = end_time - start_time
+
         with open(output_path, 'wb') as f:
             f.write(decrypted_data)
         
-        # Powiadomienie użytkownika o sukcesie operacji.
+        print(f"Deszyfrowanie pliku '{file_path}' zajęło: {elapsed_time:.2f} sekund.")
         messagebox.showinfo("Sukces", "Plik został odszyfrowany i zapisany.")
 
 # Konfiguracja graficznego interfejsu użytkownika.
 app = tk.Tk()
-app.title("DES Encrypt/Decrypt Stream")
+app.title("DES Strumieniowy")
 
-# Pole do wprowadzania klucza DES.
-key_label = tk.Label(app, text="Klucz DES (8 znaków):")
-key_label.pack()
+# Główny kontener
+main_frame = tk.Frame(app, padx=10, pady=10)
+main_frame.pack(fill="both", expand=True, padx=10, pady=10)
 
-key_entry = tk.Entry(app, show="*")  # Pole ukrywające znaki wpisywane jako klucz.
-key_entry.pack()
+# Sekcja klucza
+key_frame = tk.LabelFrame(main_frame, text="Klucz DES", padx=10, pady=10)
+key_frame.pack(fill="x", pady=10)
 
-# Przycisk do szyfrowania plików.
-encrypt_button = tk.Button(app, text="Zaszyfruj plik", command=encrypt_file_action)
-encrypt_button.pack()
+key_label = tk.Label(key_frame, text="Klucz DES (8 znaków):")
+key_label.pack(anchor="center", pady=5)
 
-# Przycisk do deszyfrowania plików.
-decrypt_button = tk.Button(app, text="Odszyfruj plik", command=decrypt_file_action)
-decrypt_button.pack()
+key_entry = tk.Entry(key_frame, show="*", width=50)
+key_entry.pack(fill="x", pady=5)
 
-# Ustawienia rozmiaru okna GUI.
-app.geometry("400x200")  # Rozmiar okna (szerokość x wysokość).
-app.mainloop()  # Uruchomienie pętli głównej interfejsu.
+generate_key_button = tk.Button(key_frame, text="Wygeneruj klucz", command=generate_key)
+generate_key_button.pack(fill="x", pady=5)
+
+copy_key_button = tk.Button(key_frame, text="Kopiuj klucz", command=copy_key)
+copy_key_button.pack(fill="x", pady=5)
+
+# Sekcja plików
+file_frame = tk.LabelFrame(main_frame, text="Operacje na plikach", padx=10, pady=10)
+file_frame.pack(fill="x", pady=10)
+
+encrypt_button = tk.Button(file_frame, text="Zaszyfruj plik", command=encrypt_file_action)
+encrypt_button.pack(fill="x", pady=5)
+
+decrypt_button = tk.Button(file_frame, text="Odszyfruj plik", command=decrypt_file_action)
+decrypt_button.pack(fill="x", pady=5)
+
+# Rozmiar okna
+app.geometry("520x400")
+app.mainloop()

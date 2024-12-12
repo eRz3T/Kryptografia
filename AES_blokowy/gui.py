@@ -1,8 +1,28 @@
 import tkinter as tk
 from tkinter import filedialog, messagebox
-from AES_blokowy.encrypt import encrypt_file
-from AES_blokowy.decrypt import decrypt_file
+from encrypt import encrypt_file
+from decrypt import decrypt_file
 import os
+import time  # Dodane do pomiaru czasu
+import psutil  # Dodane do pomiaru pamięci RAM
+import random
+import string
+import pyperclip  # Do obsługi schowka
+
+# Funkcja do generowania losowego klucza AES.
+def generate_key():
+    key = ''.join(random.choices(string.ascii_letters + string.digits, k=32))
+    key_entry.delete(0, tk.END)  # Wyczyść pole klucza
+    key_entry.insert(0, key)  # Wstaw wygenerowany klucz
+
+# Funkcja do kopiowania klucza do schowka.
+def copy_key():
+    key = key_entry.get()
+    if key:
+        pyperclip.copy(key)
+        messagebox.showinfo("Sukces", "Klucz został skopiowany do schowka.")
+    else:
+        messagebox.showerror("Błąd", "Nie ma klucza do skopiowania!")
 
 # Funkcja do pobierania klucza AES z pola tekstowego GUI.
 def get_key():
@@ -11,12 +31,11 @@ def get_key():
         # Wyświetlenie błędu, jeśli klucz nie spełnia wymagań.
         messagebox.showerror("Error", "Klucz AES musi mieć 32 znaki (256 bitów)!")
         return None
-    return key
+    return key 
 
 # Funkcja obsługująca szyfrowanie pliku.
 def encrypt_file_action(input_path=None, output_path=None, key=None):
     if not input_path or not output_path or not key:
-        # Obsługa interakcji z GUI (wybór pliku).
         input_path = filedialog.askopenfilename(title="Wybierz plik do zaszyfrowania")
         if not input_path:
             return
@@ -27,14 +46,27 @@ def encrypt_file_action(input_path=None, output_path=None, key=None):
         if not key:
             return
 
+    # Pomiar czasu i pamięci
+    process = psutil.Process()
+    start_time = time.time()
+    start_memory = process.memory_info().rss  # Pamięć przed operacją
+
     encrypt_file(input_path, output_path, key)
-    # Informowanie użytkownika o sukcesie operacji.
+
+    end_time = time.time()
+    end_memory = process.memory_info().rss  # Pamięć po operacji
+    elapsed_time = end_time - start_time
+    memory_used = (end_memory - start_memory) / (1024 * 1024)  # Konwersja na MB
+
+    # Wyświetlenie informacji
+    print(f"Szyfrowanie pliku '{input_path}' zajęło: {elapsed_time:.2f} sekund.")
+    print(f"Zużycie pamięci RAM: {memory_used:.2f} MB.")
+
     messagebox.showinfo("Sukces", "Plik został zaszyfrowany i zapisany.")
 
 # Funkcja obsługująca deszyfrowanie pliku.
 def decrypt_file_action(input_path=None, output_path=None, key=None):
     if not input_path or not output_path or not key:
-        # Obsługa interakcji z GUI (wybór pliku).
         input_path = filedialog.askopenfilename(title="Wybierz plik do odszyfrowania")
         if not input_path:
             return
@@ -45,8 +77,22 @@ def decrypt_file_action(input_path=None, output_path=None, key=None):
         if not key:
             return
 
+    # Pomiar czasu i pamięci
+    process = psutil.Process()
+    start_time = time.time()
+    start_memory = process.memory_info().rss  # Pamięć przed operacją
+
     decrypt_file(input_path, output_path, key)
-    # Informowanie użytkownika o sukcesie operacji.
+
+    end_time = time.time()
+    end_memory = process.memory_info().rss  # Pamięć po operacji
+    elapsed_time = end_time - start_time
+    memory_used = (end_memory - start_memory) / (1024 * 1024)  # Konwersja na MB
+
+    # Wyświetlenie informacji
+    print(f"Deszyfrowanie pliku '{input_path}' zajęło: {elapsed_time:.2f} sekund.")
+    print(f"Zużycie pamięci RAM: {memory_used:.2f} MB.")
+
     messagebox.showinfo("Sukces", "Plik został odszyfrowany i zapisany.")
 
 # Funkcja obsługująca szyfrowanie tekstu i zapisanie go do pliku.
@@ -63,35 +109,71 @@ def encrypt_text_action():
         # Tymczasowy zapis tekstu do pliku przed szyfrowaniem.
         with open("temp_text.txt", "wb") as temp_file:
             temp_file.write(text)
+
+        # Pomiar czasu i pamięci
+        process = psutil.Process()
+        start_time = time.time()
+        start_memory = process.memory_info().rss  # Pamięć przed operacją
+
         encrypt_file("temp_text.txt", output_path, key)
-        os.remove("temp_text.txt")  # Usunięcie pliku tymczasowego.
+
+        end_time = time.time()
+        end_memory = process.memory_info().rss  # Pamięć po operacji
+        elapsed_time = end_time - start_time
+        memory_used = (end_memory - start_memory) / (1024 * 1024)  # Konwersja na MB
+
+        os.remove("temp_text.txt")  # Usunięcie pliku tymczasowego
+        print(f"Szyfrowanie tekstu zajęło: {elapsed_time:.2f} sekund.")
+        print(f"Zużycie pamięci RAM: {memory_used:.2f} MB.")
         messagebox.showinfo("Sukces", "Tekst został zaszyfrowany i zapisany w pliku.")
 
 # Konfiguracja GUI.
 app = tk.Tk()
-app.title("AES Encrypt/Decrypt")
+app.title("AES Blokowy")
 
-key_label = tk.Label(app, text="Klucz AES (32 znaki):")
-key_label.pack()
+# Główny kontener
+main_frame = tk.Frame(app, padx=10, pady=10)
+main_frame.pack(fill="both", expand=True, padx=10, pady=10)
 
-key_entry = tk.Entry(app, show="*")
-key_entry.pack()
+# Sekcja klucza
+key_frame = tk.LabelFrame(main_frame, text="Klucz AES", padx=10, pady=10)
+key_frame.pack(fill="x", pady=10)
 
-text_label = tk.Label(app, text="Tekst do zaszyfrowania:")
-text_label.pack()
+key_label = tk.Label(key_frame, text="Klucz AES (32 znaki):")
+key_label.pack(anchor="center", pady=5)
 
-text_entry = tk.Text(app, height=10, width=40)
-text_entry.pack()
+key_entry = tk.Entry(key_frame, show="*", width=50)
+key_entry.pack(fill="x", pady=10)
 
-encrypt_button = tk.Button(app, text="Zaszyfruj plik", command=encrypt_file_action)
-encrypt_button.pack()
+generate_key_button = tk.Button(key_frame, text="Wygeneruj klucz", command=generate_key)
+generate_key_button.pack(fill="x", pady=5)
 
-decrypt_button = tk.Button(app, text="Odszyfruj plik", command=decrypt_file_action)
-decrypt_button.pack()
+copy_key_button = tk.Button(key_frame, text="Kopiuj klucz", command=copy_key)
+copy_key_button.pack(fill="x", pady=5)
 
-encrypt_text_button = tk.Button(app, text="Zaszyfruj tekst do pliku", command=encrypt_text_action)
-encrypt_text_button.pack()
+# Sekcja tekstu do szyfrowania
+text_frame = tk.LabelFrame(main_frame, text="Szyfrowanie tekstu", padx=10, pady=10)
+text_frame.pack(fill="x", pady=10)
 
-app.geometry("400x400")
+text_label = tk.Label(text_frame, text="Tekst do zaszyfrowania:")
+text_label.pack(anchor="w")
+
+text_entry = tk.Text(text_frame, height=10, width=50)
+text_entry.pack(pady=5)
+
+encrypt_text_button = tk.Button(text_frame, text="Zaszyfruj tekst do pliku", command=encrypt_text_action)
+encrypt_text_button.pack(pady=5)
+
+# Sekcja plików
+file_frame = tk.LabelFrame(main_frame, text="Szyfrowanie/Deszyfrowanie plików", padx=10, pady=10)
+file_frame.pack(fill="x", pady=10)
+
+encrypt_button = tk.Button(file_frame, text="Zaszyfruj plik", command=encrypt_file_action)
+encrypt_button.pack(fill="x", pady=5)
+
+decrypt_button = tk.Button(file_frame, text="Odszyfruj plik", command=decrypt_file_action)
+decrypt_button.pack(fill="x", pady=5)
+
+# Rozmiar okna
+app.geometry("520x680")
 app.mainloop()
-
