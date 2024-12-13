@@ -87,7 +87,7 @@ def decrypt_file_action():
 # GUI
 
 app = tk.Tk()
-app.title("Hamak")
+app.title("Hamac")
 app.geometry("520x580")
 
 key_frame = tk.LabelFrame(app, text="Klucz Hamak")
