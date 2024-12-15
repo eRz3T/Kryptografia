@@ -368,6 +368,88 @@ K = g^{xy} \mod p
 \end{itemize}
 \end{quotation}
 
+\subsubsection{Kod Huffmana}
+\noindent\textbf{Opis}
+\begin{quotation}\noindent Kodowanie Huffmana to technika kompresji danych, która polega na przypisaniu zmiennobitowych kodów binarnych do symboli danych, w zależności od ich częstotliwości występowania. Metoda została opracowana przez Davida Huffmana w 1952 roku i od tego czasu znajduje zastosowanie w wielu dziedzinach, takich jak kompresja plików czy transmisja danych. W kodowaniu Huffmana symbole o większej częstotliwości występowania otrzymują krótsze kody, a symbole mniej częste – dłuższe, co prowadzi do optymalnego wykorzystania przestrzeni danych.
+\end{quotation}
+
+\noindent\textbf{Zasada działania}
+\begin{quotation}\noindent Kodowanie Huffmana tworzy strukturę drzewa binarnego, która umożliwia efektywne kodowanie i dekodowanie symboli.
+
+\noindent\textbf{Proces kodowania:}
+\begin{itemize}
+\item Analizowana jest częstotliwość występowania symboli w danych wejściowych.
+\item Na podstawie częstotliwości budowane jest drzewo Huffmana:
+\begin{itemize}
+\item Każdy symbol jest przedstawiany jako węzeł drzewa o wartości równej jego częstotliwości.
+\item Węzły o najmniejszej częstotliwości są łączone w nowy węzeł, którego wartość to suma częstotliwości połączonych węzłów.
+\item Proces ten jest powtarzany aż do utworzenia korzenia drzewa, reprezentującego sumę wszystkich częstotliwości.
+\end{itemize}
+\item Przypisanie kodów binarnych odbywa się poprzez przypisanie:
+\begin{itemize}
+\item \texttt{0} dla gałęzi lewej,
+\item \texttt{1} dla gałęzi prawej.
+\end{itemize}
+\end{itemize}
+
+\noindent\textbf{Proces dekodowania:}
+\begin{itemize}
+\item Zakodowane dane binarne są odczytywane sekwencyjnie, bit po bicie.
+\item Podążając od korzenia drzewa Huffmana, na podstawie odczytanych bitów (\texttt{0} lub \texttt{1}), dochodzi się do liścia drzewa, który reprezentuje dany symbol.
+\item Proces jest powtarzany, aż wszystkie bity zostaną odczytane, a dane odtworzone.
+\end{itemize}
+\end{quotation}
+
+\noindent\textbf{Zastosowanie}
+\begin{quotation}\noindent Kodowanie Huffmana jest szeroko wykorzystywane w kompresji danych, takich jak:
+\begin{itemize}
+\item kompresja plików (np. ZIP, GZIP),
+\item formaty multimedialne (np. JPEG, MP3),
+\item transmisja danych w sieciach komputerowych.
+\end{itemize}
+Jego główną zaletą jest bezstratność kompresji oraz efektywność, szczególnie w przypadku danych z nierównomiernym rozkładem częstotliwości symboli. Mimo pojawienia się bardziej zaawansowanych algorytmów, kodowanie Huffmana pozostaje jednym z fundamentów teorii kompresji.
+\end{quotation}
+
+\subsubsection{Kod Hamminga}
+\noindent\textbf{Opis}
+\begin{quotation}\noindent Kod Hamminga to metoda wykrywania i korekcji błędów w danych binarnych, opracowana przez Richarda W. Hamminga w 1950 roku. Jest to kod korekcyjny, który pozwala na wykrycie jednego błędu i jego poprawienie w każdej jednostce danych. Kod Hamminga (7,4), jedna z najczęściej używanych wersji, koduje 4 bity danych w 7-bitowy blok, dodając 3 bity kontrolne. Dzięki temu kod jest w stanie wykryć i poprawić pojedynczy błąd, co czyni go przydatnym w komunikacji cyfrowej oraz pamięciach komputerowych.
+\end{quotation}
+
+\noindent\textbf{Zasada działania}
+\begin{quotation}\noindent Kod Hamminga wykorzystuje nadmiarowe bity kontrolne, które pozwalają na wykrycie i korekcję błędów w blokach danych.
+
+\noindent\textbf{Proces kodowania:}
+\begin{itemize}
+\item Dane są podzielone na bloki o długości 4 bitów.
+\item Do każdego bloku danych dodawane są 3 bity kontrolne (\texttt{P1}, \texttt{P2}, \texttt{P4}), które są umieszczane w odpowiednich pozycjach:
+\begin{itemize}
+\item \texttt{P1} zależy od bitów \texttt{D1}, \texttt{D2}, \texttt{D4}.
+\item \texttt{P2} zależy od bitów \texttt{D1}, \texttt{D3}, \texttt{D4}.
+\item \texttt{P4} zależy od bitów \texttt{D2}, \texttt{D3}, \texttt{D4}.
+\end{itemize}
+\item Pozostałe pozycje w 7-bitowym bloku zajmują dane (\texttt{D1}, \texttt{D2}, \texttt{D3}, \texttt{D4}).
+\end{itemize}
+
+\noindent\textbf{Proces dekodowania i korekcji:}
+\begin{itemize}
+\item Odbierany jest zakodowany blok (7 bitów).
+\item Obliczane są bity kontrolne (\texttt{C1}, \texttt{C2}, \texttt{C4}) na podstawie otrzymanych danych i porównywane z nadmiarowymi bitami.
+\item Jeśli istnieje rozbieżność, jej pozycja jest identyfikowana jako suma wag bitów kontrolnych (\texttt{C1}, \texttt{C2}, \texttt{C4}).
+\item Błąd w odpowiednim bicie jest korygowany poprzez jego odwrócenie.
+\item Po korekcji odczytywane są dane (\texttt{D1}, \texttt{D2}, \texttt{D3}, \texttt{D4}).
+\end{itemize}
+\end{quotation}
+
+\noindent\textbf{Zastosowanie}
+\begin{quotation}\noindent Kod Hamminga jest stosowany w sytuacjach, gdzie wymagana jest korekcja błędów w czasie rzeczywistym, takich jak:
+\begin{itemize}
+\item komunikacja satelitarna i radiowa,\newline
+\item pamięci komputerowe (np. ECC – Error Correction Code),\newline
+\item systemy transmisji danych w sieciach komputerowych,\newline
+\item przechowywanie danych w systemach RAID.
+\end{itemize}
+Jego główną zaletą jest zdolność do efektywnej korekcji pojedynczych błędów przy niewielkim narzucie danych kontrolnych, co czyni go niezastąpionym w wielu systemach wymagających wysokiej niezawodności.
+\end{quotation}
 
 
 \newpage
@@ -746,6 +828,48 @@ Zastosowanie w projekcie:
 \end{center}
 \end{figure}
 
+\subsection{Kod Huffmana}
+\begin{quotation} \noindent Program wykorzystuje on algorytm kodowania Huffmana, który przypisuje zmiennobitowe kody binarne symbolom w zależności od ich częstotliwości występowania. Algorytm działa w oparciu o drzewo Huffmana, w którym symbole o wyższej częstotliwości są reprezentowane przez krótsze kody, co pozwala efektywnie zmniejszyć rozmiar danych bez utraty informacji. Program umożliwia użytkownikowi zarówno szyfrowanie tekstu i plików, jak i ich późniejsze odszyfrowanie. Działanie programu opiera się na trzech głównych modułach: szyfrowania, deszyfrowania oraz interfejsu graficznego. Moduł szyfrowania odczytuje dane wejściowe (tekst lub zawartość pliku), analizuje częstotliwość występowania symboli i buduje drzewo Huffmana. Na podstawie drzewa generowane są kody binarne przypisywane każdemu symbolowi, które następnie są używane do zakodowania danych. Wynikowe dane zakodowane, wraz z informacją o strukturze drzewa Huffmana, są zapisywane do pliku w formacie binarnym. Moduł deszyfrowania wykorzystuje zapisane drzewo Huffmana do interpretacji zakodowanych danych. Po odczytaniu bitów użytkownik odtwarza oryginalne dane, poruszając się po drzewie Huffmana od korzenia do liści, zgodnie z odczytanymi bitami (0 dla lewej gałęzi, 1 dla prawej). Program gwarantuje, że wynik deszyfrowania będzie identyczny z pierwotnymi danymi wejściowymi, pod warunkiem, że nie nastąpiła ich modyfikacja w czasie przesyłu.\newline
+
+\noindent\textbf{Scenariusz użycia programu}
+\begin{itemize}
+\item Użytkownik uruchamia aplikację i wprowadza tekst w polu tekstowym.
+\item Klika przycisk „Zaszyfruj tekst do pliku”, aby zapisać zaszyfrowaną wersję tekstu w formacie Huffmana.
+\item Użytkownik wybiera plik do zaszyfrowania, klikając przycisk „Zaszyfruj plik”. Plik jest przetwarzany, a jego zakodowana wersja zapisywana do pliku wyjściowego.
+\item W przypadku odszyfrowania użytkownik wybiera zaszyfrowany plik Huffmana i klika „Odszyfruj plik”. Program odtwarza oryginalne dane, zapisując je w wybranym pliku wyjściowym.
+\item Wyniki operacji (np. sukces, błędy) są wyświetlane w komunikatach okienkowych, co umożliwia łatwą kontrolę działania programu.
+\end{itemize}
+\end{quotation}
+
+\begin{figure}[!htb]
+\begin{center}
+\includegraphics[scale=0.45]{pictures/huffman.png}
+\caption{Kod Huffmana}
+\label{fig:Kod Huffmana}
+\end{center}
+\end{figure}
+
+\subsection{Symulacja Kodowania Hamminga}
+\begin{quotation} \noindent Program symulujący działanie kodu Hamminga (7,4) został zaprojektowany, aby wizualizować procesy związane z wykrywaniem i korekcją błędów w danych binarnych. Kod Hamminga umożliwia zarówno wykrycie, jak i poprawienie jednego błędu w przesyłanych lub przechowywanych danych, co jest kluczowe w zapewnianiu niezawodności w systemach cyfrowych. Program umożliwia użytkownikowi interaktywne obserwowanie, jak oryginalne dane są kodowane, jak błąd zostaje losowo wprowadzony do zakodowanych danych, a następnie jak system identyfikuje i koryguje ten błąd, aby odzyskać pierwotne dane.\newline
+
+\noindent\textbf{Scenariusz użycia programu}
+\begin{itemize}
+\item Użytkownik uruchamia aplikację i klika przycisk „Symuluj kod Hamminga”.
+\item Program generuje losowe dane wejściowe (4 bity) i koduje je w bloku Hamminga (7,4).
+\item Program losowo wprowadza jeden błąd w zakodowanych danych.
+\item Program identyfikuje pozycję błędu, koryguje go i odtwarza pierwotne dane.
+\item Wynik procesu (oryginalne dane, zakodowane dane, dane z błędem, pozycja błędu, poprawione dane) jest wyświetlany w oknie aplikacji.
+\item Użytkownik może powtarzać symulację, obserwując nowe dane i wyniki.
+\end{itemize}
+\end{quotation}
+
+\begin{figure}[!htb]
+\begin{center}
+\includegraphics[scale=0.45]{pictures/hamming.png}
+\caption{Symulacja Kodowania Hamminga}
+\label{fig:Symulacja Kodowania Hamminga}
+\end{center}
+\end{figure}
 
 \newpage
 \section{Podsumowanie}
